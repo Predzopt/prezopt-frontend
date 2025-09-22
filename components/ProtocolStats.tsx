@@ -50,41 +50,39 @@ export default function ProtocolStats({ stats }: ProtocolStatsProps) {
 
   return (
     <div
-      className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4"
+      className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4"
       data-testid="protocol-stats"
     >
       {statsToShow.map((stat, index) => (
-        <Card key={index} className="p-6 hover-elevate">
+        <Card key={index} className="hover-elevate bg-body-bg border-main/40 p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-muted-foreground mb-1">{stat.label}</p>
-              <p className="text-2xl font-bold font-mono" data-testid={`stat-value-${index}`}>
-                {stat.value}
-              </p>
-              {stat.change && (
+              <p className="text-body mb-1 text-sm">{stat.label}</p>
+              <p className="font-mono text-2xl font-bold text-white">{stat.value}</p>
+              {/* {stat.change && (
                 <p
-                  className={`text-sm font-medium ${
+                  className={`text-sm font-medium text-white ${
                     stat.trend === 'up'
                       ? 'text-success'
                       : stat.trend === 'down'
-                      ? 'text-destructive'
-                      : 'text-muted-foreground'
+                        ? 'text-destructive'
+                        : ''
                   }`}
                 >
                   {stat.change}
                 </p>
-              )}
+              )} */}
             </div>
             <div
-              className={`p-3 rounded-md ${
+              className={`rounded-md p-3 ${
                 stat.trend === 'up'
                   ? 'bg-success/10 text-success'
                   : stat.trend === 'down'
-                  ? 'bg-destructive/10 text-destructive'
-                  : 'bg-muted text-muted-foreground'
+                    ? 'bg-destructive/10 text-destructive'
+                    : 'bg-muted text-muted-foreground'
               }`}
             >
-              <stat.icon className="w-6 h-6" />
+              <stat.icon className="h-6 w-6" />
             </div>
           </div>
         </Card>

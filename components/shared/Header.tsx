@@ -30,19 +30,30 @@ export default function Header({ handleConnect, walletConnected, walletAddress }
   }, []);
 
   return (
-    <header
-      className={cn(
-        'z-50 sticky top-3 transition-all duration-700 max-w-full mx-auto ease-in-out',
-        canShrink
-          ? 'w-[90%] sm:max-w-4xl bg-white/10 backdrop-blur-xl rounded-2xl border-2'
-          : 'w-full'
-      )}
-    >
-      <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between ">
+    <header className={cn('fixed top-3 z-50 w-full')}>
+      <div
+        className={cn(
+          'relative mx-auto flex items-center justify-between border-2 px-4 py-4 duration-300 ease-in',
+          canShrink
+            ? 'bg-body-bg-light/30 border-main/10 max-w-4xl rounded-2xl backdrop-blur-xl'
+            : 'max-w-7xl border-transparent'
+        )}
+      >
+        <div
+          className={cn(
+            'via-main absolute -top-[1px] left-1/2 h-[1px] w-md -translate-x-1/2 bg-linear-90 from-transparent from-0% via-50% to-transparent to-100%',
+            canShrink ? 'opacity-100' : 'opacity-0'
+          )}
+        ></div>
+
         <span className="text-2xl font-bold uppercase">Prezopt</span>
-        <nav className="hidden md:flex gap-10">
+        <nav className="hidden gap-10 md:flex">
           {navLink.map(link => (
-            <Link className="hover:text-primary transition-colors" key={link.label} href={link.url}>
+            <Link
+              className="hover:text-main text-base font-medium text-white/80 duration-300"
+              key={link.label}
+              href={link.url}
+            >
               {link.label}
             </Link>
           ))}
@@ -56,19 +67,19 @@ export default function Header({ handleConnect, walletConnected, walletAddress }
 
           <Button
             variant="ghost"
-            className="inline-grid gap-2 px-0 cursor-pointer md:hidden"
+            className="inline-grid cursor-pointer gap-2 px-0 md:hidden"
             onClick={() => setOpen(o => !o)}
           >
             <hr
               className={cn(
-                'border-2 w-6 border-black rounded-2xl transition-all duration-300',
-                open ? 'rotate-45 translate-y-2.5' : ''
+                'w-6 rounded-2xl border-2 border-black transition-all duration-300',
+                open ? 'translate-y-2.5 rotate-45' : ''
               )}
             />
             <hr
               className={cn(
-                'border-2 w-6 border-black rounded-2xl transition-all duration-300',
-                open ? '-rotate-45 -translate-[-1.9px_-2px]' : ''
+                'w-6 rounded-2xl border-2 border-black transition-all duration-300',
+                open ? '-translate-[-1.9px_-2px] -rotate-45' : ''
               )}
             />
           </Button>

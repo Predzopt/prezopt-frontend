@@ -23,12 +23,12 @@ export default function Landing({ onWalletConnect }: LandingProps) {
 
   return (
     <>
-      {/* <Header {...{ handleConnect, walletConnected, walletAddress }} /> */}
+      <Header {...{ handleConnect, walletConnected, walletAddress }} />
       <Hero walletConnected={walletConnected} handleConnect={handleConnect} />
-      {/* <Stats />
+      <Stats />
       <Features />
       <HowItWorks />
-      <Footer /> */}
+      <Footer />
     </>
   );
 }

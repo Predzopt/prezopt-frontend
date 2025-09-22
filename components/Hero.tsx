@@ -15,7 +15,7 @@ const MotionImage = motion.create(Image);
 
 export default function Hero({ walletConnected, handleConnect }: HeroProps) {
   return (
-    <section className="relative flex min-h-screen w-full items-center justify-center overflow-hidden px-4 py-20">
+    <section className="relative flex min-h-screen w-full items-center justify-center overflow-hidden bg-none px-4 py-20 sm:max-h-screen">
       {/* <Image
         className="absolute top-1/2 left-0 h-full w-full -translate-y-1/2 object-contain object-center"
         src="/images/geometrics.webp"

@@ -3,8 +3,8 @@ import ProtocolStats from './ProtocolStats';
 
 export default function Stats() {
   return (
-    <section className="py-10 px-4 bg-muted/30">
-      <div className="max-w-7xl mx-auto ">
+    <section className="px-4 py-10 ">
+      <div className="mx-auto max-w-7xl">
         <ProtocolStats />
       </div>
     </section>
