@@ -43,13 +43,14 @@
   --radius-xl: calc(var(--radius) + 4px);
 
   /* THEME CONFIGURATION */
-  --font-parkinsans: "Parkinsans", sans-serif;
   --color-body-bg: oklch(0.15 0 0);
   --color-body-bg-alt: oklch(0.14 0.01 303.89);
   --color-main: oklch(0.65 0.21 295.16);
   --color-body: oklch(0.68 0 0);
   --color-body-light: oklch(1 0 0 / 0.12);
-  --color-body-bg-lightoklch(0.14 0.01 303.89);
+  --color-body-bg-light: oklch(0.14 0.01 303.89);
+  --font-parkinsans: "Parkinsans", sans-serif;
+  --color-mine: #e10;
 }
 
 :root {
@@ -85,6 +86,9 @@
   --sidebar-accent-foreground: oklch(0.205 0 0);
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
+
+  /*  */
+  --glow: linear-gradient(rgba(20, 9, 43, 0.51) 0%, rgba(20, 9, 43, 0.51) 50%, rgba(20, 9, 43, 0.51) 100%) rgba(20, 9, 43, 0.51);
 }
 
 .dark {
@@ -127,6 +131,12 @@
   }
 
   body {
-    @apply bg-neutral-900/0 bg-main font-parkinsans;
+    @apply bg-linear-90 from-body-bg via-body-bg-alt via-50% to-body-bg font-parkinsans text-body;
   }
+
 }
+
+/* 
+
+
+*/
