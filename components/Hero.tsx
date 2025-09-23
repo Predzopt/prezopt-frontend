@@ -1,3 +1,5 @@
+"use client";
+
 import React from 'react';
 import WalletConnection from './WalletConnection';
 import { Button } from './ui/button';
@@ -5,15 +7,12 @@ import { ArrowRight } from 'lucide-react';
 import Image from 'next/image';
 import ParticleBackground from './ParticleBackground';
 import { motion } from 'motion/react';
-
-type HeroProps = {
-  handleConnect: (address: string) => void;
-  walletConnected: boolean;
-};
+import { useAppKitAccount } from '@reown/appkit/react';
 
 const MotionImage = motion.create(Image);
 
-export default function Hero({ walletConnected, handleConnect }: HeroProps) {
+export default function Hero() {
+  const { isConnected } = useAppKitAccount();
   return (
     <section className="relative flex min-h-screen w-full items-center justify-center overflow-hidden bg-none px-4 py-20 sm:max-h-screen">
       {/* <Image
@@ -58,9 +57,9 @@ export default function Hero({ walletConnected, handleConnect }: HeroProps) {
           Harness machine learning, Layer 2 efficiency, and $PZT governance for better yield.
         </p>
 
-        {!walletConnected ? (
+        {!isConnected ? (
           <div className="flex flex-col items-center justify-center gap-4 sm:flex-row">
-            <WalletConnection onConnect={handleConnect} />
+            <WalletConnection />
             <Button
               variant="outline"
               className="h-11 rounded-[10px] px-4 py-3.5 opacity-100 shadow-[inset_0_0.6px_0.6px_-1.58px_rgba(255,255,255,0.894),inset_0_2.28px_2.28px_-3.16px_rgba(255,255,255,0.745),inset_0_10px_10px_-4.75px_rgba(255,255,255,0.05)] backdrop-blur-[5px] duration-300 will-change-auto [background:linear-gradient(rgba(28,28,28,0.1)_0%,rgba(18,18,18,0.2)_100%)_rgba(0,0,0,0)]"
