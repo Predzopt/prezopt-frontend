@@ -27,7 +27,11 @@ export default function RootLayout({
     <html lang="en">
       <AppKit>
         <SidebarProvider>
-          <body className={`${manrope.className} antialiased`}>{children}</body>
+          <body
+            className={`${manrope.className} overflow-x-hidden antialiased`}
+          >
+            {children}
+          </body>
         </SidebarProvider>
       </AppKit>
     </html>

@@ -62,7 +62,11 @@ import AppSidebar from '@/components/layout/AppSidebar';
 import Backdrop from '@/components/layout/Backdrop';
 import React from 'react';
 
-export default function AdminLayout({ children }: { children: React.ReactNode }) {
+export default function AdminLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   const { isExpanded, isHovered, isMobileOpen } = useSidebar();
 
   // Dynamic class for main content margin based on sidebar state
@@ -78,11 +82,13 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       <AppSidebar />
       <Backdrop />
       {/* Main Content Area */}
-      <div className={`flex-1 transition-all duration-300 ease-in-out ${mainContentMargin}`}>
+      <div
+        className={`flex-1 transition-all duration-300 ease-in-out ${mainContentMargin}`}
+      >
         {/* Header */}
         <AppHeader />
         {/* Page Content */}
-        <div className="mx-auto max-w-(--breakpoint-2xl) p-4 md:p-6">{children}</div>
+        <div className="mx-auto p-4 md:p-6">{children}</div>
       </div>
     </div>
   );
