@@ -67,7 +67,7 @@ export default function GovernanceProposal({
   const quorumPercentage = (proposal.totalVotes / proposal.quorum) * 100;
 
   return (
-    <Card className="bg-body-bg" data-testid={`proposal-${proposal.id}`}>
+    <Card className="bg-body-bg"  >
       <CardHeader>
         <div className="flex items-start justify-between">
           <div>
@@ -143,7 +143,7 @@ export default function GovernanceProposal({
               onClick={() => handleVote('for')}
               disabled={isVoting}
               className="h-11 flex-1 border-green-600/20 bg-green-700 text-white hover:bg-green-600/10 hover:text-green-700"
-              data-testid={`button-vote-for-${proposal.id}`}
+              
             >
               <CheckCircle className="mr-2 h-4 w-4" />
               {isVoting && selectedVote === 'for' ? 'Voting...' : 'Vote For'}
@@ -154,7 +154,7 @@ export default function GovernanceProposal({
               onClick={() => handleVote('against')}
               disabled={isVoting}
               className="hover:text-destructive bg-destructive border-destructive/20 hover:bg-destructive/10 h-11 flex-1 text-white"
-              data-testid={`button-vote-against-${proposal.id}`}
+             
             >
               <X className="mr-2 h-4 w-4" />
               {isVoting && selectedVote === 'against'

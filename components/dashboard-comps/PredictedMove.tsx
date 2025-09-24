@@ -42,7 +42,7 @@ export default function PredictedMove({ prediction }: PredictedMoveProps) {
   };
 
   return (
-    <Card data-testid="predicted-move">
+    <Card  >
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Target className="w-5 h-5" />

@@ -99,7 +99,7 @@ export default function ActivityHistory({ activities, showPZTRewards = true }: A
   };
 
   return (
-    <Card data-testid="activity-history">
+    <Card >
       <CardHeader>
         <CardTitle>Recent Activity</CardTitle>
       </CardHeader>
@@ -113,18 +113,18 @@ export default function ActivityHistory({ activities, showPZTRewards = true }: A
                 </div>
                 <div>
                   <div className="flex items-center gap-2">
-                    <span className="font-medium capitalize" data-testid={`activity-type-${activity.id}`}>
+                    <span className="font-medium capitalize" >
                       {activity.type}
                     </span>
                     {getStatusBadge(activity.status)}
                   </div>
                   <div className="text-sm text-muted-foreground">
-                    <span data-testid={`activity-amount-${activity.id}`}>{activity.amount}</span>
+                    <span  >{activity.amount}</span>
                     {activity.details && (
                       <span className="ml-2">• {activity.details}</span>
                     )}
                   </div>
-                  <div className="text-xs text-muted-foreground" data-testid={`activity-time-${activity.id}`}>
+                  <div className="text-xs text-muted-foreground"  >
                     {activity.timestamp}
                   </div>
                 </div>

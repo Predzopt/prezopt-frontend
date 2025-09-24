@@ -43,7 +43,7 @@ export default function StakingPanel({
   };
 
   return (
-    <div className="space-y-6" data-testid="staking-panel">
+    <div className="space-y-6" >
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
@@ -73,9 +73,9 @@ export default function StakingPanel({
                 value={stakeAmount}
                 onChange={(e) => setStakeAmount(e.target.value)}
                 className="font-mono"
-                data-testid="input-stake-amount"
+               
               />
-              <Button variant="outline" onClick={handleMaxClick} data-testid="button-max">
+              <Button variant="outline" onClick={handleMaxClick}  >
                 Max
               </Button>
             </div>
@@ -101,7 +101,7 @@ export default function StakingPanel({
             <Switch 
               checked={autoCompound} 
               onCheckedChange={setAutoCompound}
-              data-testid="switch-auto-compound"
+             
             />
           </div>
 
@@ -109,7 +109,7 @@ export default function StakingPanel({
             onClick={handleStake}
             disabled={!stakeAmount || parseFloat(stakeAmount) <= 0 || isStaking}
             className="w-full"
-            data-testid="button-stake"
+           
           >
             {isStaking ? "Staking..." : "Stake PZT"}
           </Button>

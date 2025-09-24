@@ -40,11 +40,11 @@ export default function AllocationChart({ data, totalValue = "$45,678" }: Alloca
   };
 
   return (
-    <Card data-testid="allocation-chart">
+    <Card  >
       <CardHeader>
         <CardTitle className="flex items-center justify-between">
           <span>Portfolio Allocation</span>
-          <span className="text-lg font-mono" data-testid="text-total-value">{totalValue}</span>
+          <span className="text-lg font-mono"  >{totalValue}</span>
         </CardTitle>
       </CardHeader>
       <CardContent>

@@ -28,11 +28,11 @@ export default function WalletConnection({ onConnect, connected = false, address
   };
 
   return (
-    <div data-testid="wallet-connection">
+    <div >
       {connected ? (
         <div className="flex items-center gap-2 px-4 py-2 bg-success/10 text-success rounded-md border border-success/20">
           <Check className="w-4 h-4" />
-          <span className="font-mono text-sm" data-testid="text-wallet-address">
+          <span className="font-mono text-sm" >
             {address && formatAddress(address)}
           </span>
         </div>
@@ -41,7 +41,7 @@ export default function WalletConnection({ onConnect, connected = false, address
           onClick={handleConnect}
           disabled={isConnecting}
           className="flex items-center gap-2"
-          data-testid="button-connect-wallet"
+          
         >
           <Wallet className="w-4 h-4" />
           {isConnecting ? "Connecting..." : "Connect Wallet"}

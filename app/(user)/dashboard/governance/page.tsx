@@ -160,7 +160,7 @@ export default function Governance() {
                     <Input
                       id="proposal-title"
                       placeholder="Enter proposal title"
-                      data-testid="input-proposal-title"
+                     
                     />
                   </div>
 
@@ -170,7 +170,7 @@ export default function Governance() {
                       id="proposal-description"
                       placeholder="Describe your proposal in detail"
                       rows={4}
-                      data-testid="textarea-proposal-description"
+                     
                     />
                   </div>
 
@@ -179,7 +179,7 @@ export default function Governance() {
                     <Input
                       id="proposal-deposit"
                       placeholder="5,000 PZT (minimum)"
-                      data-testid="input-proposal-deposit"
+                   
                     />
                     <p className="text-body mt-1 text-xs">
                       Refundable if proposal passes
@@ -188,7 +188,7 @@ export default function Governance() {
 
                   <Button
                     className="w-full"
-                    data-testid="button-submit-proposal"
+                  
                   >
                     Submit Proposal
                   </Button>

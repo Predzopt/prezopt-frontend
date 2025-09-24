@@ -25,14 +25,16 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="min-h-screen" data-testid="dashboard">
+    <div className="min-h-screen"  >
       {/* Header */}
 
-      <div className="container mx-auto px-4 py-8">
+      <>
         {/* Portfolio Summary */}
         <div className="mb-8">
           <div className="mb-6 flex items-center justify-between">
-            <h2 className="text-3xl font-bold">Portfolio Overview</h2>
+            <h2 className="text-3xl font-bold text-white">
+              Portfolio Overview
+            </h2>
             <div className="flex gap-2">
               <DepositModal />
               <WithdrawModal />
@@ -44,9 +46,14 @@ export default function Dashboard() {
               <CardContent className="p-6">
                 <div className="mb-2 flex items-center gap-2">
                   <DollarSign className="text-muted-foreground h-4 w-4" />
-                  <span className="text-muted-foreground text-sm">Total Deposited</span>
+                  <span className="text-muted-foreground text-sm">
+                    Total Deposited
+                  </span>
                 </div>
-                <p className="font-mono text-2xl font-bold" data-testid="total-deposited">
+                <p
+                  className="font-mono text-2xl font-bold"
+                
+                >
                   ${portfolioData.totalDeposited}
                 </p>
               </CardContent>
@@ -56,11 +63,13 @@ export default function Dashboard() {
               <CardContent className="p-6">
                 <div className="mb-2 flex items-center gap-2">
                   <TrendingUp className="text-muted-foreground h-4 w-4" />
-                  <span className="text-muted-foreground text-sm">Current Value</span>
+                  <span className="text-muted-foreground text-sm">
+                    Current Value
+                  </span>
                 </div>
                 <p
                   className="text-success font-mono text-2xl font-bold"
-                  data-testid="current-value"
+                 
                 >
                   ${portfolioData.currentValue}
                 </p>
@@ -71,12 +80,19 @@ export default function Dashboard() {
               <CardContent className="p-6">
                 <div className="mb-2 flex items-center gap-2">
                   <TrendingUp className="text-muted-foreground h-4 w-4" />
-                  <span className="text-muted-foreground text-sm">Net Gain</span>
+                  <span className="text-muted-foreground text-sm">
+                    Net Gain
+                  </span>
                 </div>
-                <p className="text-success font-mono text-2xl font-bold" data-testid="net-gain">
+                <p
+                  className="text-success font-mono text-2xl font-bold"
+                 
+                >
                   +${portfolioData.netGain}
                 </p>
-                <p className="text-success text-sm">+{portfolioData.gainPercentage}%</p>
+                <p className="text-success text-sm">
+                  +{portfolioData.gainPercentage}%
+                </p>
               </CardContent>
             </Card>
 
@@ -84,9 +100,14 @@ export default function Dashboard() {
               <CardContent className="p-6">
                 <div className="mb-2 flex items-center gap-2">
                   <Percent className="text-muted-foreground h-4 w-4" />
-                  <span className="text-muted-foreground text-sm">Estimated APY</span>
+                  <span className="text-muted-foreground text-sm">
+                    Estimated APY
+                  </span>
                 </div>
-                <p className="font-mono text-2xl font-bold" data-testid="estimated-apy">
+                <p
+                  className="font-mono text-2xl font-bold"
+                  
+                >
                   {portfolioData.estimatedAPY}%
                 </p>
                 <div className="flex items-center gap-1">
@@ -112,20 +133,24 @@ export default function Dashboard() {
               <CardHeader>
                 <CardTitle className="flex items-center justify-between">
                   <span>Rebalance Settings</span>
-                  <Switch defaultChecked data-testid="switch-auto-rebalance" />
+                  <Switch defaultChecked   />
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
                     <span className="text-sm">Auto Rebalance</span>
-                    <Badge variant="secondary" className="bg-success/10 text-success">
+                    <Badge
+                      variant="secondary"
+                      className="bg-success/10 text-success"
+                    >
                       Active
                     </Badge>
                   </div>
                   <p className="text-muted-foreground text-sm">
-                    Automatic rebalancing is enabled. The protocol will execute profitable moves
-                    when opportunities are detected by our ML model.
+                    Automatic rebalancing is enabled. The protocol will execute
+                    profitable moves when opportunities are detected by our ML
+                    model.
                   </p>
                 </div>
               </CardContent>
@@ -135,7 +160,7 @@ export default function Dashboard() {
 
         {/* Activity History */}
         <ActivityHistory />
-      </div>
+      </>
     </div>
   );
 }
