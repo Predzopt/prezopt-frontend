@@ -8,6 +8,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import GovernanceProposal from '@/components/dashboard-comps/GovernanceProposal';
 import { Vote, Plus, Users, Clock } from 'lucide-react';
+import { btnStyle, cn } from '@/lib/utils';
 
 export default function Governance() {
   const [showCreateForm, setShowCreateForm] = useState(false);
@@ -62,19 +63,20 @@ export default function Governance() {
   ];
 
   return (
-    <div className="min-h-screen" data-testid="governance-page">
-      <div className="container mx-auto px-4 py-8">
+    <div className="min-h-screen">
+      <>
         <div className="mb-8">
-          <div className="mb-6 flex items-center justify-between">
+          <div className="mb-6 flex flex-wrap items-center justify-between">
             <div>
-              <h2 className="mb-2 text-3xl font-bold">Governance</h2>
-              <p className="text-muted-foreground">
-                Participate in protocol governance by voting on proposals and creating new ones.
+              <h2 className="mb-2 text-3xl font-bold text-white">Governance</h2>
+              <p className="text-body">
+                Participate in protocol governance by voting on proposals and
+                creating new ones.
               </p>
             </div>
             <Button
+              className={cn(btnStyle, 'mt-4 sm:mt-0')}
               onClick={() => setShowCreateForm(!showCreateForm)}
-              data-testid="button-create-proposal"
             >
               <Plus className="mr-2 h-4 w-4" />
               Create Proposal
@@ -83,33 +85,37 @@ export default function Governance() {
 
           {/* Voting Power Display */}
           <div className="mb-8 grid grid-cols-1 gap-4 md:grid-cols-3">
-            <Card>
+            <Card className="bg-neutral-950">
               <CardContent className="p-6 text-center">
                 <div className="mb-2 flex items-center justify-center gap-2">
-                  <Users className="text-muted-foreground h-4 w-4" />
-                  <span className="text-muted-foreground text-sm">Total $PZT Held</span>
+                  <Users className="text-body h-4 w-4" />
+                  <span className="text-body text-sm">Total $PZT Held</span>
                 </div>
-                <p className="font-mono text-2xl font-bold">{votingPower.totalPZT}</p>
+                <p className="font-mono text-2xl font-bold text-white">
+                  {votingPower.totalPZT}
+                </p>
               </CardContent>
             </Card>
 
-            <Card>
+            <Card className="bg-neutral-950">
               <CardContent className="p-6 text-center">
                 <div className="mb-2 flex items-center justify-center gap-2">
-                  <Vote className="text-muted-foreground h-4 w-4" />
-                  <span className="text-muted-foreground text-sm">Staked $PZT (2x)</span>
+                  <Vote className="text-body h-4 w-4" />
+                  <span className="text-body text-sm">Staked $PZT (2x)</span>
                 </div>
-                <p className="text-primary font-mono text-2xl font-bold">{votingPower.stakedPZT}</p>
+                <p className="font-mono text-2xl font-bold text-white">
+                  {votingPower.stakedPZT}
+                </p>
               </CardContent>
             </Card>
 
-            <Card>
+            <Card className="bg-neutral-950">
               <CardContent className="p-6 text-center">
                 <div className="mb-2 flex items-center justify-center gap-2">
-                  <Vote className="text-muted-foreground h-4 w-4" />
-                  <span className="text-muted-foreground text-sm">Total Voting Power</span>
+                  <Vote className="text-body h-4 w-4" />
+                  <span className="text-body text-sm">Total Voting Power</span>
                 </div>
-                <p className="text-success font-mono text-2xl font-bold">
+                <p className="font-mono text-2xl font-bold text-white">
                   {votingPower.totalVotingPower}
                 </p>
               </CardContent>
@@ -122,8 +128,10 @@ export default function Governance() {
             {/* Proposals List */}
             <div className="space-y-6">
               <div className="mb-6 flex items-center gap-4">
-                <h3 className="text-xl font-semibold">Active Proposals</h3>
-                <Badge variant="secondary">
+                <h3 className="text-xl font-semibold text-white">
+                  Active Proposals
+                </h3>
+                <Badge variant="secondary" className="bg-main text-white">
                   {proposals.filter(p => p.status === 'active').length} Active
                 </Badge>
               </div>
@@ -173,12 +181,15 @@ export default function Governance() {
                       placeholder="5,000 PZT (minimum)"
                       data-testid="input-proposal-deposit"
                     />
-                    <p className="text-muted-foreground mt-1 text-xs">
+                    <p className="text-body mt-1 text-xs">
                       Refundable if proposal passes
                     </p>
                   </div>
 
-                  <Button className="w-full" data-testid="button-submit-proposal">
+                  <Button
+                    className="w-full"
+                    data-testid="button-submit-proposal"
+                  >
                     Submit Proposal
                   </Button>
                 </CardContent>
@@ -186,9 +197,9 @@ export default function Governance() {
             )}
 
             {/* Voting Timeline */}
-            <Card>
+            <Card className="bg-neutral-950">
               <CardHeader>
-                <CardTitle className="flex items-center gap-2">
+                <CardTitle className="flex items-center gap-2 text-white">
                   <Clock className="h-5 w-5" />
                   Voting Process
                 </CardTitle>
@@ -196,46 +207,56 @@ export default function Governance() {
               <CardContent className="space-y-4">
                 <div className="space-y-3">
                   <div className="flex items-start gap-3">
-                    <div className="bg-primary flex h-6 w-6 items-center justify-center rounded-full text-xs font-bold text-white">
+                    <div className="bg-main flex h-6 w-6 items-center justify-center rounded-full text-xs font-bold text-white">
                       1
                     </div>
                     <div>
-                      <p className="text-sm font-medium">Proposal Submission</p>
-                      <p className="text-muted-foreground text-xs">
+                      <p className="text-sm font-medium text-white">
+                        Proposal Submission
+                      </p>
+                      <p className="text-body text-xs">
                         5,000 PZT minimum deposit required
                       </p>
                     </div>
                   </div>
 
                   <div className="flex items-start gap-3">
-                    <div className="bg-primary flex h-6 w-6 items-center justify-center rounded-full text-xs font-bold text-white">
+                    <div className="bg-main flex h-6 w-6 items-center justify-center rounded-full text-xs font-bold text-white">
                       2
                     </div>
                     <div>
-                      <p className="text-sm font-medium">Voting Period</p>
-                      <p className="text-muted-foreground text-xs">3 days for community voting</p>
+                      <p className="text-sm font-medium text-white">
+                        Voting Period
+                      </p>
+                      <p className="text-body text-xs">
+                        3 days for community voting
+                      </p>
                     </div>
                   </div>
 
                   <div className="flex items-start gap-3">
-                    <div className="bg-primary flex h-6 w-6 items-center justify-center rounded-full text-xs font-bold text-white">
+                    <div className="bg-main flex h-6 w-6 items-center justify-center rounded-full text-xs font-bold text-white">
                       3
                     </div>
                     <div>
-                      <p className="text-sm font-medium">Quorum Check</p>
-                      <p className="text-muted-foreground text-xs">
+                      <p className="text-sm font-medium text-white">
+                        Quorum Check
+                      </p>
+                      <p className="text-body text-xs">
                         5% of staked PZT must participate
                       </p>
                     </div>
                   </div>
 
                   <div className="flex items-start gap-3">
-                    <div className="bg-primary flex h-6 w-6 items-center justify-center rounded-full text-xs font-bold text-white">
+                    <div className="bg-main flex h-6 w-6 items-center justify-center rounded-full text-xs font-bold text-white">
                       4
                     </div>
                     <div>
-                      <p className="text-sm font-medium">Execution</p>
-                      <p className="text-muted-foreground text-xs">
+                      <p className="text-sm font-medium text-white">
+                        Execution
+                      </p>
+                      <p className="text-body text-xs">
                         48 hour timelock before implementation
                       </p>
                     </div>
@@ -245,7 +266,7 @@ export default function Governance() {
             </Card>
           </div>
         </div>
-      </div>
+      </>
     </div>
   );
 }
