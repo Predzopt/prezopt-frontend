@@ -1,17 +1,12 @@
+"use client";
+
 import React, { useEffect, useState } from 'react';
 import WalletConnection from '../WalletConnection';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
-import { LucideLayoutDashboard, LucideMenu } from 'lucide-react';
 import { Button } from '../ui/button';
 
-type HeaderProps = {
-  handleConnect: (address: string) => void;
-  walletConnected: boolean;
-  walletAddress: string;
-};
-
-export default function Header({ handleConnect, walletConnected, walletAddress }: HeaderProps) {
+export default function Header() {
   const [canShrink, setCanShrink] = useState(false);
   const [open, setOpen] = useState(false);
 
@@ -59,11 +54,7 @@ export default function Header({ handleConnect, walletConnected, walletAddress }
           ))}
         </nav>
         <div className="flex items-center gap-4">
-          <WalletConnection
-            onConnect={handleConnect}
-            connected={walletConnected}
-            address={walletAddress}
-          />
+          <WalletConnection />
 
           <Button
             variant="ghost"
