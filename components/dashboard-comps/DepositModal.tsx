@@ -12,6 +12,7 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Plus, ArrowRight, CheckCircle } from 'lucide-react';
+import { btnStyle, cn } from '@/lib/utils';
 
 interface DepositModalProps {
   trigger?: React.ReactNode;
@@ -80,7 +81,7 @@ export default function DepositModal({
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
+      <DialogTrigger asChild className={cn(btnStyle)}>
         {trigger || (
           <Button>
             <Plus className="mr-2 h-4 w-4" />
@@ -88,7 +89,7 @@ export default function DepositModal({
           </Button>
         )}
       </DialogTrigger>
-      <DialogContent className="sm:max-w-md"  >
+      <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle>
             {step === 1 && 'Deposit USDC'}
@@ -111,13 +112,8 @@ export default function DepositModal({
                     value={amount}
                     onChange={e => setAmount(e.target.value)}
                     className="font-mono"
-                    
                   />
-                  <Button
-                    variant="outline"
-                    onClick={handleMaxClick}
-              
-                  >
+                  <Button variant="outline" onClick={handleMaxClick}>
                     Max
                   </Button>
                 </div>
@@ -130,7 +126,7 @@ export default function DepositModal({
                 onClick={() => setStep(2)}
                 disabled={!amount || parseFloat(amount) <= 0}
                 className="w-full"
-               >
+              >
                 Review Deposit
                 <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
@@ -185,11 +181,7 @@ export default function DepositModal({
                 >
                   Back
                 </Button>
-                <Button
-                  onClick={() => setStep(3)}
-                  className="flex-1"
-                 
-                >
+                <Button onClick={() => setStep(3)} className="flex-1">
                   Proceed
                 </Button>
               </div>
@@ -208,7 +200,6 @@ export default function DepositModal({
                     onClick={handleApprove}
                     disabled={isApproving}
                     className="w-full"
-                  
                   >
                     {isApproving ? 'Approving...' : 'Approve USDC'}
                   </Button>
@@ -223,7 +214,6 @@ export default function DepositModal({
                     onClick={handleDeposit}
                     disabled={isDepositing}
                     className="w-full"
-                   
                   >
                     {isDepositing ? 'Depositing...' : 'Confirm Deposit'}
                   </Button>
@@ -248,11 +238,7 @@ export default function DepositModal({
               <Badge variant="secondary" className="text-xs">
                 $PZT stakers earned {fees.stakers} USDC from this transaction
               </Badge>
-              <Button
-                onClick={resetModal}
-                className="w-full"
-               
-              >
+              <Button onClick={resetModal} className="w-full">
                 Close
               </Button>
             </div>

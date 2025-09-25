@@ -1,7 +1,8 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Progress } from "@/components/ui/progress";
-import { ArrowRight, Clock, Target, TrendingUp } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Progress } from '@/components/ui/progress';
+import { ArrowRight, Clock, Target, TrendingUp } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 interface PredictedMoveProps {
   prediction?: {
@@ -18,97 +19,111 @@ interface PredictedMoveProps {
 export default function PredictedMove({ prediction }: PredictedMoveProps) {
   // todo: remove mock functionality
   const defaultPrediction = {
-    source: "Aave USDC",
-    destination: "Compound USDC", 
-    expectedGain: "156.78",
+    source: 'Aave USDC',
+    destination: 'Compound USDC',
+    expectedGain: '156.78',
     confidence: 87,
-    executionTime: "~3 hours",
-    keeperReward: "0.45",
-    amount: "15,000"
+    executionTime: '~3 hours',
+    keeperReward: '0.45',
+    amount: '15,000',
   };
 
   const pred = prediction || defaultPrediction;
 
   const getConfidenceColor = (confidence: number) => {
-    if (confidence >= 80) return "text-success";
-    if (confidence >= 60) return "text-warning";
-    return "text-destructive";
+    if (confidence >= 80) return 'text-green-600';
+    if (confidence >= 60) return 'text-warning';
+    return 'text-destructive';
   };
 
   const getConfidenceBg = (confidence: number) => {
-    if (confidence >= 80) return "bg-success/10";
-    if (confidence >= 60) return "bg-warning/10";
-    return "bg-destructive/10";
+    if (confidence >= 80) return 'bg-green-600/10';
+    if (confidence >= 60) return 'bg-warning/10';
+    return 'bg-destructive/10';
   };
 
   return (
-    <Card  >
+    <Card className="bg-neutral-950">
       <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <Target className="w-5 h-5" />
+        <CardTitle className="flex items-center gap-2 text-white">
+          <Target className="h-5 w-5" />
           Predicted Next Move
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
-        <div className="flex items-center justify-center gap-3 p-4 bg-muted/50 rounded-md">
+        <div className="bg-main/20 flex items-center justify-center gap-3 rounded-md p-4">
           <div className="text-center">
-            <p className="text-sm text-muted-foreground">From</p>
-            <p className="font-medium">{pred.source}</p>
+            <p className="text-body text-sm">From</p>
+            <p className="font-medium text-white">{pred.source}</p>
           </div>
-          <ArrowRight className="w-5 h-5 text-primary" />
+          <ArrowRight className="text-main h-5 w-5" />
           <div className="text-center">
-            <p className="text-sm text-muted-foreground">To</p>
-            <p className="font-medium">{pred.destination}</p>
+            <p className="text-body text-sm">To</p>
+            <p className="font-medium text-white">{pred.destination}</p>
           </div>
         </div>
 
         <div className="grid grid-cols-2 gap-4">
-          <div className="text-center p-3 border rounded-md">
-            <p className="text-sm text-muted-foreground">Amount</p>
-            <p className="font-mono font-semibold">${pred.amount}</p>
+          <div className="rounded-md border p-3 text-center">
+            <p className="text-body text-sm">Amount</p>
+            <p className="font-semibold text-white">${pred.amount}</p>
           </div>
-          <div className="text-center p-3 border rounded-md">
-            <p className="text-sm text-muted-foreground">Expected Gain</p>
-            <p className="font-mono font-semibold text-success">+${pred.expectedGain}</p>
+          <div className="rounded-md border p-3 text-center">
+            <p className="text-body text-sm">Expected Gain</p>
+            <p className="font-semibold text-white">+${pred.expectedGain}</p>
           </div>
         </div>
 
         <div className="space-y-3">
           <div className="flex items-center justify-between">
-            <span className="text-sm text-muted-foreground">Confidence Score</span>
+            <span className="text-body text-sm">Confidence Score</span>
             <div className="flex items-center gap-2">
-              <span className={`font-mono font-medium ${getConfidenceColor(pred.confidence)}`}>
+              <span
+                className={`font-medium text-white ${getConfidenceColor(pred.confidence)}`}
+              >
                 {pred.confidence}%
               </span>
-              <Badge className={`text-xs ${getConfidenceBg(pred.confidence)} ${getConfidenceColor(pred.confidence)}`}>
-                {pred.confidence >= 80 ? "High" : pred.confidence >= 60 ? "Medium" : "Low"}
+              <Badge
+                className={cn(
+                  `text-xs ${getConfidenceBg(pred.confidence)} ${getConfidenceColor(pred.confidence)}`
+                )}
+              >
+                {pred.confidence >= 80
+                  ? 'High'
+                  : pred.confidence >= 60
+                    ? 'Medium'
+                    : 'Low'}
               </Badge>
             </div>
           </div>
-          <Progress value={pred.confidence} className="h-2" />
+          <Progress
+            value={pred.confidence}
+            className="bg-main/30 [&>div]:bg-main h-2"
+          />
         </div>
 
         <div className="grid grid-cols-2 gap-4 text-sm">
           <div className="flex items-center gap-2">
-            <Clock className="w-4 h-4 text-muted-foreground" />
+            <Clock className="text-body h-4 w-4" />
             <div>
-              <p className="text-muted-foreground">Execution Time</p>
-              <p className="font-medium">{pred.executionTime}</p>
+              <p className="text-body">Execution Time</p>
+              <p className="font-medium text-white">{pred.executionTime}</p>
             </div>
           </div>
           <div className="flex items-center gap-2">
-            <TrendingUp className="w-4 h-4 text-muted-foreground" />
+            <TrendingUp className="text-body h-4 w-4" />
             <div>
-              <p className="text-muted-foreground">Keeper Reward</p>
-              <p className="font-mono font-medium">+{pred.keeperReward} PZT</p>
+              <p className="text-body">Keeper Reward</p>
+              <p className="font-medium text-white">+{pred.keeperReward} PZT</p>
             </div>
           </div>
         </div>
 
-        <div className="text-xs text-muted-foreground p-3 bg-muted/30 rounded-md">
+        <div className="text-body rounded-md bg-neutral-900/50 p-3 text-xs">
           <p>
-            Our ML model analyzes yield differentials across DeFi protocols to predict optimal rebalancing opportunities.
-            Keeper bots execute these moves automatically when conditions are met.
+            Our ML model analyzes yield differentials across DeFi protocols to
+            predict optimal rebalancing opportunities. Keeper bots execute these
+            moves automatically when conditions are met.
           </p>
         </div>
       </CardContent>

@@ -25,7 +25,7 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="min-h-screen"  >
+    <div className="min-h-screen">
       {/* Header */}
 
       <>
@@ -42,76 +42,59 @@ export default function Dashboard() {
           </div>
 
           <div className="mb-6 grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
-            <Card>
+            <Card className="bg-neutral-950">
               <CardContent className="p-6">
                 <div className="mb-2 flex items-center gap-2">
-                  <DollarSign className="text-muted-foreground h-4 w-4" />
-                  <span className="text-muted-foreground text-sm">
-                    Total Deposited
-                  </span>
+                  <DollarSign className="text-body h-4 w-4" />
+                  <span className="text-body text-sm">Total Deposited</span>
                 </div>
-                <p
-                  className="font-mono text-2xl font-bold"
-                
-                >
+                <p className="font-mono text-2xl font-bold text-white">
                   ${portfolioData.totalDeposited}
                 </p>
               </CardContent>
             </Card>
 
-            <Card>
+            <Card className="bg-neutral-950">
               <CardContent className="p-6">
                 <div className="mb-2 flex items-center gap-2">
-                  <TrendingUp className="text-muted-foreground h-4 w-4" />
-                  <span className="text-muted-foreground text-sm">
-                    Current Value
-                  </span>
+                  <TrendingUp className="text-body h-4 w-4" />
+                  <span className="text-body text-sm">Current Value</span>
                 </div>
-                <p
-                  className="text-success font-mono text-2xl font-bold"
-                 
-                >
+                <p className="font-mono text-2xl font-bold text-white">
                   ${portfolioData.currentValue}
                 </p>
               </CardContent>
             </Card>
 
-            <Card>
+            <Card className="bg-neutral-950">
               <CardContent className="p-6">
                 <div className="mb-2 flex items-center gap-2">
-                  <TrendingUp className="text-muted-foreground h-4 w-4" />
-                  <span className="text-muted-foreground text-sm">
-                    Net Gain
-                  </span>
+                  <TrendingUp className="text-body h-4 w-4" />
+                  <span className="text-body text-sm">Net Gain</span>
                 </div>
-                <p
-                  className="text-success font-mono text-2xl font-bold"
-                 
-                >
+                <p className="font-mono text-2xl font-bold text-white">
                   +${portfolioData.netGain}
                 </p>
-                <p className="text-success text-sm">
+                <Badge className="bg-main/10 border-main/80 text-main mt-3 border text-xs">
                   +{portfolioData.gainPercentage}%
-                </p>
+                </Badge>
               </CardContent>
             </Card>
 
-            <Card>
+            <Card className="bg-neutral-950">
               <CardContent className="p-6">
                 <div className="mb-2 flex items-center gap-2">
-                  <Percent className="text-muted-foreground h-4 w-4" />
-                  <span className="text-muted-foreground text-sm">
-                    Estimated APY
-                  </span>
+                  <Percent className="text-body h-4 w-4" />
+                  <span className="text-body text-sm">Estimated APY</span>
                 </div>
-                <p
-                  className="font-mono text-2xl font-bold"
-                  
-                >
+                <p className="font-mono text-2xl font-bold text-white">
                   {portfolioData.estimatedAPY}%
                 </p>
-                <div className="flex items-center gap-1">
-                  <Badge variant="secondary" className="text-xs">
+                <div className="mt-3 flex items-center gap-1">
+                  <Badge
+                    variant="secondary"
+                    className="bg-main/10 border-main/80 text-main border text-xs"
+                  >
                     +{portfolioData.pztBoost}% PZT Boost
                   </Badge>
                 </div>
@@ -129,25 +112,28 @@ export default function Dashboard() {
           <div className="space-y-6 lg:col-span-2">
             <PredictedMove />
 
-            <Card>
+            <Card className="bg-neutral-950">
               <CardHeader>
-                <CardTitle className="flex items-center justify-between">
+                <CardTitle className="flex items-center justify-between text-white">
                   <span>Rebalance Settings</span>
-                  <Switch defaultChecked   />
+                  <Switch
+                    defaultChecked
+                    className="data-[state=checked]:bg-main data-[state=unchecked]:bg-neutral-400"
+                  />
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
-                    <span className="text-sm">Auto Rebalance</span>
+                    <span className="text-sm text-white">Auto Rebalance</span>
                     <Badge
                       variant="secondary"
-                      className="bg-success/10 text-success"
+                      className="bg-green-600/10 text-green-600"
                     >
                       Active
                     </Badge>
                   </div>
-                  <p className="text-muted-foreground text-sm">
+                  <p className="text-body text-sm">
                     Automatic rebalancing is enabled. The protocol will execute
                     profitable moves when opportunities are detected by our ML
                     model.

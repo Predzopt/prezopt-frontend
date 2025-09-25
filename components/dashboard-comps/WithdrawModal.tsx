@@ -13,6 +13,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Minus, ArrowRight, CheckCircle } from 'lucide-react';
+import { btnStyle2, cn } from '@/lib/utils';
 
 interface WithdrawModalProps {
   trigger?: React.ReactNode;
@@ -80,7 +81,7 @@ export default function WithdrawModal({
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         {trigger || (
-          <Button variant="outline">
+          <Button variant="outline" className={cn(btnStyle2)}>
             <Minus className="mr-2 h-4 w-4" />
             Withdraw
           </Button>
