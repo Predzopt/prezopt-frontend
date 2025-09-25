@@ -49,13 +49,13 @@ export default function ProtocolStats({ stats }: ProtocolStatsProps) {
   const statsToShow = stats || defaultStats;
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4" data-testid="protocol-stats">
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4"  >
       {statsToShow.map((stat, index) => (
         <Card key={index} className="p-6 hover-elevate">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-muted-foreground mb-1">{stat.label}</p>
-              <p className="text-2xl font-bold font-mono" data-testid={`stat-value-${index}`}>
+              <p className="text-2xl font-bold font-mono"  >
                 {stat.value}
               </p>
               {stat.change && (

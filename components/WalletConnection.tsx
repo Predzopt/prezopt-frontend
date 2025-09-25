@@ -14,11 +14,11 @@ export default function WalletConnection() {
   };
 
   return (
-    <div data-testid="wallet-connection">
+    <div >
       {isConnected && address ? (
         <div className="bg-success/10 text-success border-success/20 flex items-center gap-2 rounded-md border px-4 py-2">
           <Check className="h-4 w-4" />
-          <span className="font-mono text-sm" data-testid="text-wallet-address">
+          <span className="font-mono text-sm"  >
             {formatAddress(address)}
           </span>
         </div>
