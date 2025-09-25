@@ -19,7 +19,7 @@ export default function Staking() {
   };
 
   return (
-    <div className=" min-h-screen" data-testid="staking-page">
+    <div className=" min-h-screen"  >
       <div className="container mx-auto px-4 py-8">
         <div className="mb-8">
           <h2 className="mb-2 text-3xl font-bold">$PZT Staking Center</h2>
@@ -70,7 +70,7 @@ export default function Staking() {
                   </div>
                 </div>
 
-                <Button className="mt-4 w-full" data-testid="button-claim-rewards">
+                <Button className="mt-4 w-full"  >
                   <Gift className="mr-2 h-4 w-4" />
                   Claim Rewards
                 </Button>

@@ -52,7 +52,7 @@ export default function ProtocolStats({ stats }: ProtocolStatsProps) {
   return (
     <div
       className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4 lg:gap-8"
-      data-testid="protocol-stats"
+      
     >
       {statsToShow.map((stat, index) => (
         <Card key={index} className="hover-elevate bg-body-bg border-main/40 p-6">
