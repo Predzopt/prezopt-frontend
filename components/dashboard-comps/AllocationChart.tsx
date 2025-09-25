@@ -6,6 +6,7 @@ interface AllocationData {
   value: number;
   apy: number;
   color: string;
+  [key: string]: any;
 }
 
 interface AllocationChartProps {
