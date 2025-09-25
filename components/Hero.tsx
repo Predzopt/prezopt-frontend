@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import React from 'react';
 import WalletConnection from './WalletConnection';
@@ -45,7 +45,7 @@ export default function Hero() {
       />
 
       <div className="bg-main/30 absolute top-1/2 left-1/2 size-[20rem] translate-[-50%] rounded-full blur-[100px]" />
-      <ParticleBackground />
+      {/* <ParticleBackground /> */}
       <div className="relative z-10 container mx-auto max-w-2xl text-center">
         <span className="border-main/50 rounded-full border bg-transparent px-4 py-1.5 text-sm text-white shadow-[inset_0px_-10px_10px_rgba(55,8,150,0.7)] backdrop-blur-xl">
           The Future of DeFi Yield Optimization
@@ -54,7 +54,8 @@ export default function Hero() {
           Smarter DeFi Returns, The Prezopt Way
         </h1>
         <p className="mx-auto mb-8 max-w-2xl text-xl text-white/80 sm:text-balance">
-          Harness machine learning, Layer 2 efficiency, and $PZT governance for better yield.
+          Harness machine learning, Layer 2 efficiency, and $PZT governance for
+          better yield.
         </p>
 
         {!isConnected ? (

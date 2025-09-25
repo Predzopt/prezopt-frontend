@@ -1,10 +1,11 @@
-"use client";
+'use client';
 
 import React, { useEffect, useState } from 'react';
 import WalletConnection from '../WalletConnection';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
 import { Button } from '../ui/button';
+import Image from 'next/image';
 
 export default function Header() {
   const [canShrink, setCanShrink] = useState(false);
@@ -41,7 +42,15 @@ export default function Header() {
           )}
         ></div>
 
-        <span className="text-2xl font-bold uppercase">Prezopt</span>
+        <Link href="/">
+          <Image
+            src="/images/brand/Prezopt_2Jujora.svg"
+            width={1174}
+            height={263}
+            alt="Prezopt Logo"
+            className="w-[150px]"
+          />
+        </Link>
         <nav className="hidden gap-10 md:flex">
           {navLink.map(link => (
             <Link
