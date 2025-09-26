@@ -5,16 +5,16 @@ import WalletConnection from './WalletConnection';
 import { Button } from './ui/button';
 import { ArrowRight } from 'lucide-react';
 import Image from 'next/image';
-import ParticleBackground from './ParticleBackground';
 import { motion } from 'motion/react';
 import { useAppKitAccount } from '@reown/appkit/react';
+import LiquidEther from './LiquidEther';
 
 const MotionImage = motion.create(Image);
 
 export default function Hero() {
   const { isConnected } = useAppKitAccount();
   return (
-    <section className="relative flex min-h-screen w-full items-center justify-center overflow-hidden bg-none px-4 py-20 sm:max-h-screen">
+    <section className="relative h-auto w-full flex-col items-center justify-center overflow-hidden bg-none px-4 py-20 pt-40">
       {/* <Image
         className="absolute top-1/2 left-0 h-full w-full -translate-y-1/2 object-contain object-center"
         src="/images/geometrics.webp"
@@ -22,6 +22,28 @@ export default function Hero() {
         height={1040}
         alt="geometrics"
       /> */}
+
+      {/* <div style={{ width: '100%', height: 600, position: 'relative' }}>
+       
+      </div> */}
+
+      <LiquidEther
+        colors={['#5227FF', '#FF9FFC', '#B19EEF']}
+        mouseForce={20}
+        cursorSize={100}
+        isViscous={false}
+        viscous={30}
+        iterationsViscous={32}
+        iterationsPoisson={32}
+        resolution={0.5}
+        isBounce={false}
+        autoDemo={true}
+        autoSpeed={0.5}
+        autoIntensity={2.2}
+        takeoverDuration={0.25}
+        autoResumeDelay={3000}
+        autoRampDuration={0.6}
+      />
 
       <MotionImage
         initial={{ opacity: 0, scale: 0 }}
@@ -80,6 +102,23 @@ export default function Hero() {
             </Button>
           </div>
         )}
+      </div>
+
+      <div className="flex w-full items-center justify-center pt-20">
+        <MotionImage
+          animate={{ rotate: 360 }}
+          transition={{
+            repeat: Infinity,
+            repeatType: 'loop',
+            duration: 6,
+            ease: 'backIn',
+          }}
+          src="/images/AnimatingballJujora.svg"
+          width={400}
+          height={500}
+          alt="globe"
+          className="a"
+        />
       </div>
     </section>
   );
