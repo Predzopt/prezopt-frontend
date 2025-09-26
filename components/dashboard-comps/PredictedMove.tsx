@@ -16,7 +16,9 @@ interface PredictedMoveProps {
   };
 }
 
-export default function PredictedMove({ prediction }: PredictedMoveProps) {
+export default function PredictedMove({
+  prediction,
+}: PredictedMoveProps | any) {
   // todo: remove mock functionality
   const defaultPrediction = {
     source: 'Aave USDC',
