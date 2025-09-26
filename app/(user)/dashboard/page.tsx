@@ -213,7 +213,7 @@ export default function Dashboard() {
         </div>
 
         {/* Activity History */}
-        <ActivityHistory activities={activity.data} />
+        <ActivityHistory activities={activity.data as any} />
       </>
     </div>
   );
