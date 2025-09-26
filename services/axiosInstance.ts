@@ -1,8 +1,7 @@
 import { BASE_URL } from '@/utils/CONSTANTS';
 import axios from 'axios';
 
-// In-memory access token
-export let accessToken: null | string = null;
+// In-memory access tokennull;
 
 export const axiosInstance = axios.create({
   baseURL: BASE_URL,
