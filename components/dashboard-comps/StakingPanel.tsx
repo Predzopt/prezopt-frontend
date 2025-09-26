@@ -1,11 +1,12 @@
-import { useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Switch } from "@/components/ui/switch";
-import { Badge } from "@/components/ui/badge";
-import { Coins, TrendingUp } from "lucide-react";
+import { useState } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Switch } from '@/components/ui/switch';
+import { Badge } from '@/components/ui/badge';
+import { Coins, TrendingUp } from 'lucide-react';
+import { btnStyle, cn } from '@/lib/utils';
 
 interface StakingPanelProps {
   pztBalance?: string;
@@ -13,12 +14,12 @@ interface StakingPanelProps {
   stakedAmount?: string;
 }
 
-export default function StakingPanel({ 
-  pztBalance = "1,234.56", 
-  currentAPY = "12.45",
-  stakedAmount = "567.89"
+export default function StakingPanel({
+  pztBalance = '1,234.56',
+  currentAPY = '12.45',
+  stakedAmount = '567.89',
 }: StakingPanelProps) {
-  const [stakeAmount, setStakeAmount] = useState("");
+  const [stakeAmount, setStakeAmount] = useState('');
   const [autoCompound, setAutoCompound] = useState(true);
   const [isStaking, setIsStaking] = useState(false);
 
@@ -31,116 +32,134 @@ export default function StakingPanel({
     // Simulate staking
     setTimeout(() => {
       setIsStaking(false);
-      setStakeAmount("");
-      console.log("Staked", stakeAmount, "PZT tokens");
+      setStakeAmount('');
+      console.log('Staked', stakeAmount, 'PZT tokens');
     }, 2000);
   };
 
   const calculateRewards = (amount: string) => {
     const value = parseFloat(amount) || 0;
     const apy = parseFloat(currentAPY) / 100;
-    return (value * apy / 365).toFixed(4); // Daily rewards
+    return ((value * apy) / 365).toFixed(4);
   };
 
   return (
-    <div className="space-y-6" >
-      <Card>
+    <div className="space-y-6">
+      <Card className="bg-neutral-950">
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Coins className="w-5 h-5" />
+          <CardTitle className="flex items-center gap-2 text-white">
+            <Coins className="h-5 w-5" />
             Stake $PZT Tokens
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="grid grid-cols-2 gap-4">
-            <div className="text-center p-3 bg-muted rounded-md">
-              <p className="text-sm text-muted-foreground">Current APY</p>
-              <p className="text-xl font-bold font-mono text-success">{currentAPY}%</p>
+            <div className="rounded-md bg-neutral-900/50 p-3 text-center">
+              <p className="text-body text-sm">Current APY</p>
+              <p className="text-success font-mono text-xl font-bold text-white">
+                {currentAPY}%
+              </p>
             </div>
-            <div className="text-center p-3 bg-muted rounded-md">
-              <p className="text-sm text-muted-foreground">Your Staked</p>
-              <p className="text-xl font-bold font-mono">{stakedAmount} PZT</p>
+            <div className="rounded-md bg-neutral-900/50 p-3 text-center">
+              <p className="text-body text-sm">Your Staked</p>
+              <p className="font-mono text-xl font-bold text-white">
+                {stakedAmount} PZT
+              </p>
             </div>
           </div>
 
           <div className="space-y-3">
-            <Label htmlFor="stake-amount">Amount to Stake</Label>
+            <Label htmlFor="stake-amount" className="text-body">
+              Amount to Stake
+            </Label>
             <div className="flex gap-2">
               <Input
                 id="stake-amount"
                 type="number"
                 placeholder="0.00"
                 value={stakeAmount}
-                onChange={(e) => setStakeAmount(e.target.value)}
-                className="font-mono"
-               
+                onChange={e => setStakeAmount(e.target.value)}
+                className="text-body font-mono"
               />
-              <Button variant="outline" onClick={handleMaxClick}  >
+              <Button
+                variant="outline"
+                className="bg-main text-white"
+                onClick={handleMaxClick}
+              >
                 Max
               </Button>
             </div>
-            <p className="text-sm text-muted-foreground">
-              Available: {pztBalance} PZT
-            </p>
+            <p className="text-body text-sm">Available: {pztBalance} PZT</p>
           </div>
 
           {stakeAmount && parseFloat(stakeAmount) > 0 && (
-            <div className="p-3 bg-success/5 rounded-md border border-success/20">
+            <div className="rounded-md border border-green-600/20 bg-green-600/5 p-3">
               <div className="flex justify-between text-sm">
-                <span>Estimated daily rewards</span>
-                <span className="font-mono text-success">+{calculateRewards(stakeAmount)} PZT</span>
+                <span className="text-green-600">Estimated daily rewards</span>
+                <span className="font-mono text-green-600">
+                  +{calculateRewards(stakeAmount)} PZT
+                </span>
               </div>
             </div>
           )}
 
-          <div className="flex items-center justify-between p-3 border rounded-md">
+          <div className="flex items-center justify-between rounded-md border p-3">
             <div>
-              <p className="font-medium">Auto-compound rewards</p>
-              <p className="text-sm text-muted-foreground">Automatically stake earned rewards</p>
+              <p className="font-medium text-white">Auto-compound rewards</p>
+              <p className="text-body text-sm">
+                Automatically stake earned rewards
+              </p>
             </div>
-            <Switch 
-              checked={autoCompound} 
+            <Switch
+              checked={autoCompound}
+              className="data-[state=checked]:bg-main data-[state=unchecked]:bg-main"
               onCheckedChange={setAutoCompound}
-             
             />
           </div>
 
-          <Button 
+          <Button
             onClick={handleStake}
             disabled={!stakeAmount || parseFloat(stakeAmount) <= 0 || isStaking}
-            className="w-full"
-           
+            className={cn('w-full', btnStyle)}
           >
-            {isStaking ? "Staking..." : "Stake PZT"}
+            {isStaking ? 'Staking...' : 'Stake PZT'}
           </Button>
         </CardContent>
       </Card>
 
-      <Card>
+      <Card className="bg-neutral-950">
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <TrendingUp className="w-5 h-5" />
+          <CardTitle className="flex items-center gap-2 text-white">
+            <TrendingUp className="h-5 w-5" />
             Staking Benefits
           </CardTitle>
         </CardHeader>
         <CardContent>
           <div className="space-y-3">
             {/* todo: remove mock functionality */}
-            <div className="flex items-center justify-between p-3 border rounded-md">
-              <span className="text-sm">Fee Discount</span>
-              <Badge variant="secondary">5-10%</Badge>
+            <div className="flex items-center justify-between rounded-md border p-3">
+              <span className="text-sm text-white">Fee Discount</span>
+              <Badge variant="secondary" className="bg-main text-white">
+                5-10%
+              </Badge>
             </div>
-            <div className="flex items-center justify-between p-3 border rounded-md">
-              <span className="text-sm">APY Boost</span>
-              <Badge variant="secondary">+0.5%</Badge>
+            <div className="flex items-center justify-between rounded-md border p-3">
+              <span className="text-sm text-white">APY Boost</span>
+              <Badge variant="secondary" className="bg-main text-white">
+                +0.5%
+              </Badge>
             </div>
-            <div className="flex items-center justify-between p-3 border rounded-md">
-              <span className="text-sm">Governance Power</span>
-              <Badge variant="secondary">2x Voting</Badge>
+            <div className="flex items-center justify-between rounded-md border p-3">
+              <span className="text-sm text-white">Governance Power</span>
+              <Badge variant="secondary" className="bg-main text-white">
+                2x Voting
+              </Badge>
             </div>
-            <div className="flex items-center justify-between p-3 border rounded-md">
-              <span className="text-sm">Protocol Fees Share</span>
-              <Badge variant="secondary">60%</Badge>
+            <div className="flex items-center justify-between rounded-md border p-3">
+              <span className="text-sm text-white">Protocol Fees Share</span>
+              <Badge variant="secondary" className="bg-main text-white">
+                60%
+              </Badge>
             </div>
           </div>
         </CardContent>

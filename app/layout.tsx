@@ -26,11 +26,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <AppKit>
-        <SidebarProvider>
-          <body
-            className={`${manrope.className} overflow-x-hidden antialiased`}
-          >
+      <head>
+        <link rel="icon" href="/icon.svg" sizes="any" />
+      </head>
+      <body className={`${manrope.className} overflow-x-hidden antialiased`}>
+        <AppKit>
+          <SidebarProvider>
             {' '}
             <NextTopLoader
               color="#9c6bff"
@@ -38,12 +39,11 @@ export default function RootLayout({
               showSpinner={true}
               easing="ease"
               speed={200}
-            
             />
             {children}
-          </body>
-        </SidebarProvider>
-      </AppKit>
+          </SidebarProvider>
+        </AppKit>
+      </body>
     </html>
   );
 }
