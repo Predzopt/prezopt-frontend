@@ -21,53 +21,43 @@ import Link from 'next/link';
 import { useDashboardData } from '@/hooks/useApi';
 
 export default function Dashboard() {
-  const {
-    pools,
-    poolsSummary,
-    predictions,
-    activity,
-    systemHealth,
-    isLoading,
-    isError,
-  } = useDashboardData();
-
   // Show loading state
-  if (isLoading) {
-    return (
-      <div className="flex min-h-screen items-center justify-center">
-        <div className="flex items-center gap-2">
-          <Loader2 className="h-6 w-6 animate-spin" />
-          <span className="text-white">Loading dashboard data...</span>
-        </div>
-      </div>
-    );
-  }
+  // if (isLoading) {
+  //   return (
+  //     <div className="flex min-h-screen items-center justify-center">
+  //       <div className="flex items-center gap-2">
+  //         <Loader2 className="h-6 w-6 animate-spin" />
+  //         <span className="text-white">Loading dashboard data...</span>
+  //       </div>
+  //     </div>
+  //   );
+  // }
 
   // Show error state
-  if (isError) {
-    return (
-      <div className="flex min-h-screen items-center justify-center">
-        <div className="text-center">
-          <AlertCircle className="mx-auto mb-4 h-12 w-12 text-red-500" />
-          <h2 className="mb-2 text-xl font-semibold text-white">
-            Failed to load data
-          </h2>
-          <p className="mb-4 text-gray-400">
-            There was an error loading the dashboard data.
-          </p>
-          <Button onClick={() => window.location.reload()}>Try Again</Button>
-        </div>
-      </div>
-    );
-  }
+  // if (isError) {
+  //   return (
+  //     <div className="flex min-h-screen items-center justify-center">
+  //       <div className="text-center">
+  //         <AlertCircle className="mx-auto mb-4 h-12 w-12 text-red-500" />
+  //         <h2 className="mb-2 text-xl font-semibold text-white">
+  //           Failed to load data
+  //         </h2>
+  //         <p className="mb-4 text-gray-400">
+  //           There was an error loading the dashboard data.
+  //         </p>
+  //         <Button onClick={() => window.location.reload()}>Try Again</Button>
+  //       </div>
+  //     </div>
+  //   );
+  // }
 
   // Use real data or fallback to mock data
   const portfolioData = {
-    totalDeposited: poolsSummary.data?.totalValue?.toString() || '45,000.00',
-    currentValue: poolsSummary.data?.totalValue?.toString() || '47,234.56',
+    totalDeposited: '45,000.00',
+    currentValue: '47,234.56',
     netGain: '2,234.56', // Calculate from real data
     gainPercentage: '4.97', // Calculate from real data
-    estimatedAPY: poolsSummary.data?.averageApy?.toString() || '8.47',
+    estimatedAPY: '8.47',
     pztBoost: '0.5',
     sharesBalance: '46,156.78',
   };
@@ -76,7 +66,7 @@ export default function Dashboard() {
     <div className="min-h-screen">
       <>
         {/* System Health Status */}
-        {systemHealth.data && (
+        {/* {systemHealth.data && (
           <div className="mb-4">
             <Badge
               variant={
@@ -89,7 +79,17 @@ export default function Dashboard() {
               System Status: {systemHealth.data.status}
             </Badge>
           </div>
-        )}
+        )} */}
+
+        <div className="mb-8 flex flex-wrap items-center justify-between gap-4">
+          <h2 className="mb-2 text-3xl font-bold text-white">
+            Portfolio Summary
+          </h2>
+          <div className="flex items-center gap-4">
+            <DepositModal />
+            <WithdrawModal />
+          </div>
+        </div>
 
         {/* Portfolio Overview */}
         <div className="mb-8 grid gap-6 md:grid-cols-2 lg:grid-cols-4">
@@ -159,17 +159,6 @@ export default function Dashboard() {
         </div>
 
         {/* Action Buttons */}
-        <div className="mb-8 flex flex-wrap gap-4">
-          <DepositModal />
-          <WithdrawModal />
-          <Button
-            variant="outline"
-            className="border-main text-main hover:bg-main hover:text-white"
-          >
-            <Settings className="mr-2 h-4 w-4" />
-            Settings
-          </Button>
-        </div>
 
         {/* Main Content Grid */}
         <div className="mb-8 grid gap-8 lg:grid-cols-3">
@@ -178,7 +167,7 @@ export default function Dashboard() {
           </div>
 
           <div className="space-y-6 lg:col-span-2">
-            <PredictedMove predictions={predictions.data as any} />
+            <PredictedMove />
 
             <Card className="bg-neutral-950">
               <CardHeader>
@@ -213,7 +202,7 @@ export default function Dashboard() {
         </div>
 
         {/* Activity History */}
-        <ActivityHistory activities={activity.data as any} />
+        <ActivityHistory />
       </>
     </div>
   );
