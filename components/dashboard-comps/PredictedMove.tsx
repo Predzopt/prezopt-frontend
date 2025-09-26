@@ -1,8 +1,12 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
-import { ArrowRight, Clock, Target, TrendingUp } from 'lucide-react';
+import { ArrowRight, Clock, Loader, Target, TrendingUp } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useQuery } from '@tanstack/react-query';
+import { axiosInstance } from '@/services/axiosInstance';
+import { api } from '@/services/api';
+import { useEffect } from 'react';
 
 interface PredictedMoveProps {
   prediction?: {
@@ -16,21 +20,31 @@ interface PredictedMoveProps {
   };
 }
 
-export default function PredictedMove({
-  prediction,
-}: PredictedMoveProps | any) {
+export default function PredictedMove() {
+  const { data, isLoading, isSuccess } = useQuery<any>({
+    queryKey: ['rebalance'],
+    queryFn: async () => {
+      const response = await axiosInstance.get(api.REBALANCE);
+      return response.data;
+    },
+  });
+
+  useEffect(() => {
+    if (isSuccess && !isLoading) console.log(data);
+  }, []);
+
   // todo: remove mock functionality
   const defaultPrediction = {
-    source: 'Aave USDC',
-    destination: 'Compound USDC',
-    expectedGain: '156.78',
-    confidence: 87,
+    source: data?.signal?.fromStrategy || 'Aave',
+    destination: data?.signal?.toStrategy || 'Compound',
+    expectedGain: data?.metrics?.estimated_profit?.toLocaleString() || 0,
+    confidence: data?.metrics?.confidence * 100 || 0,
     executionTime: '~3 hours',
     keeperReward: '0.45',
-    amount: '15,000',
+    amount: data?.signal?.amount?.toLocaleString() || 0,
   };
 
-  const pred = prediction || defaultPrediction;
+  const pred = defaultPrediction;
 
   const getConfidenceColor = (confidence: number) => {
     if (confidence >= 80) return 'text-green-600';
@@ -45,7 +59,13 @@ export default function PredictedMove({
   };
 
   return (
-    <Card className="bg-neutral-950">
+    <Card className="relative overflow-hidden bg-neutral-950">
+      {isLoading && (
+        <div className="absolute top-0 left-0 z-20 flex h-full w-full flex-col items-center justify-center gap-4 bg-black/45 backdrop-blur-[1px]">
+          <Loader size={24} />
+          <span>Predicting...</span>
+        </div>
+      )}
       <CardHeader>
         <CardTitle className="flex items-center gap-2 text-white">
           <Target className="h-5 w-5" />
@@ -100,7 +120,7 @@ export default function PredictedMove({
           </div>
           <Progress
             value={pred.confidence}
-            className="bg-main/30 [&>div]:bg-main h-2"
+            className="bg-main/30 [&>div]:bg-main z-0 h-2"
           />
         </div>
 
