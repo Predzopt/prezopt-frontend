@@ -6,6 +6,7 @@ import { GiReceiveMoney } from 'react-icons/gi';
 import { RiTimerFlashLine } from 'react-icons/ri';
 import { MdPsychology } from 'react-icons/md';
 import { FaShield } from 'react-icons/fa6';
+import Image from 'next/image';
 
 export default function Features() {
   return (
@@ -16,6 +17,39 @@ export default function Features() {
           <p className="text-body mx-auto max-w-2xl text-lg">
             Advanced yield optimization with complete control of your funds
           </p>
+        </div>
+
+        <div className="hidden">
+          <Image
+            src="/images/brand/PrezoptJujora.svg"
+            width={275}
+            height={260}
+            alt="Prezopt Logo"
+          />
+          <Image
+            src="/images/brand/Prezopt_1Jujora.svg"
+            width={275}
+            height={260}
+            alt="Prezopt Logo"
+          />
+          <Image
+            src="/images/brand/Prezopt_2Jujora.svg"
+            width={1174}
+            height={263}
+            alt="Prezopt Logo"
+          />
+          <Image
+            src="/images/brand/Prezopt_3Jujora.svg"
+            width={1174}
+            height={263}
+            alt="Prezopt Logo"
+          />
+          <Image
+            src="/images/brand/Prezopt_4Jujora.svg"
+            width={100}
+            height={100}
+            alt="Prezopt Logo"
+          />
         </div>
 
         <div className="grid gap-8 lg:grid-cols-4">
@@ -29,7 +63,8 @@ export default function Features() {
                     className="bg-main/30 absolute top-0 left-0 block h-full w-full origin-[100%_100%] rotate-[15deg] rounded-[1.25em] transition-[opacity,transform] duration-300 ease-[cubic-bezier(0.83,0,0.17,1)] group-hover:[transform:rotate(25deg)_translate3d(-0.5em,-0.5em,0.5em)]"
                     style={{
                       // ...getBackgroundStyle(item.color),
-                      boxShadow: '0.5em -0.5em 0.75em hsla(223, 10%, 10%, 0.15)',
+                      boxShadow:
+                        '0.5em -0.5em 0.75em hsla(223, 10%, 10%, 0.15)',
                     }}
                   ></span>
 
@@ -47,7 +82,9 @@ export default function Features() {
                     </span>
                   </span>
                 </div>
-                <h3 className="text-lg font-semibold text-white">{item.title}</h3>
+                <h3 className="text-lg font-semibold text-white">
+                  {item.title}
+                </h3>
                 <p className="text-body">{item.content}</p>
               </Card>
             );
@@ -114,22 +151,26 @@ const featureList = [
   {
     icon: FaShield,
     title: 'Non-Custodial',
-    content: 'You maintain complete control of your funds. No centralized custody risks.',
+    content:
+      'You maintain complete control of your funds. No centralized custody risks.',
   },
   {
     icon: MdPsychology,
     title: 'AI-Powered',
-    content: 'Machine learning models predict yield opportunities across protocols.',
+    content:
+      'Machine learning models predict yield opportunities across protocols.',
   },
   {
     icon: RiTimerFlashLine,
     title: 'Automated',
-    content: 'Keeper bots execute optimal rebalances automatically when profitable.',
+    content:
+      'Keeper bots execute optimal rebalances automatically when profitable.',
   },
   {
     icon: GiReceiveMoney,
     title: 'Optimized Returns',
-    content: 'Consistently outperform static positions through dynamic allocation.',
+    content:
+      'Consistently outperform static positions through dynamic allocation.',
   },
 ];
 
