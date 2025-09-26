@@ -9,108 +9,176 @@ import PredictedMove from '@/components/dashboard-comps/PredictedMove';
 import ActivityHistory from '@/components/dashboard-comps/ActivityHistory';
 import DepositModal from '@/components/dashboard-comps/DepositModal';
 import WithdrawModal from '@/components/dashboard-comps/WithdrawModal';
-import { TrendingUp, DollarSign, Percent, Settings } from 'lucide-react';
+import {
+  TrendingUp,
+  DollarSign,
+  Percent,
+  Settings,
+  Loader2,
+  AlertCircle,
+} from 'lucide-react';
 import Link from 'next/link';
+import { useDashboardData } from '@/hooks/useApi';
 
 export default function Dashboard() {
-  // todo: remove mock functionality
+  const {
+    pools,
+    poolsSummary,
+    predictions,
+    activity,
+    systemHealth,
+    isLoading,
+    isError,
+  } = useDashboardData();
+
+  // Show loading state
+  if (isLoading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <div className="flex items-center gap-2">
+          <Loader2 className="h-6 w-6 animate-spin" />
+          <span className="text-white">Loading dashboard data...</span>
+        </div>
+      </div>
+    );
+  }
+
+  // Show error state
+  if (isError) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <div className="text-center">
+          <AlertCircle className="mx-auto mb-4 h-12 w-12 text-red-500" />
+          <h2 className="mb-2 text-xl font-semibold text-white">
+            Failed to load data
+          </h2>
+          <p className="mb-4 text-gray-400">
+            There was an error loading the dashboard data.
+          </p>
+          <Button onClick={() => window.location.reload()}>Try Again</Button>
+        </div>
+      </div>
+    );
+  }
+
+  // Use real data or fallback to mock data
   const portfolioData = {
-    totalDeposited: '45,000.00',
-    currentValue: '47,234.56',
-    netGain: '2,234.56',
-    gainPercentage: '4.97',
-    estimatedAPY: '8.47',
+    totalDeposited: poolsSummary.data?.totalValue?.toString() || '45,000.00',
+    currentValue: poolsSummary.data?.totalValue?.toString() || '47,234.56',
+    netGain: '2,234.56', // Calculate from real data
+    gainPercentage: '4.97', // Calculate from real data
+    estimatedAPY: poolsSummary.data?.averageApy?.toString() || '8.47',
     pztBoost: '0.5',
     sharesBalance: '46,156.78',
   };
 
   return (
     <div className="min-h-screen">
-      {/* Header */}
-
       <>
-        {/* Portfolio Summary */}
-        <div className="mb-8">
-          <div className="mb-6 flex items-center justify-between">
-            <h2 className="text-3xl font-bold text-white">
-              Portfolio Overview
-            </h2>
-            <div className="flex gap-2">
-              <DepositModal />
-              <WithdrawModal />
-            </div>
+        {/* System Health Status */}
+        {systemHealth.data && (
+          <div className="mb-4">
+            <Badge
+              variant={
+                systemHealth.data.status === 'healthy'
+                  ? 'default'
+                  : 'destructive'
+              }
+              className="mb-2"
+            >
+              System Status: {systemHealth.data.status}
+            </Badge>
           </div>
+        )}
 
-          <div className="mb-6 grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
-            <Card className="bg-neutral-950">
-              <CardContent className="p-6">
-                <div className="mb-2 flex items-center gap-2">
-                  <DollarSign className="text-body h-4 w-4" />
-                  <span className="text-body text-sm">Total Deposited</span>
-                </div>
-                <p className="font-mono text-2xl font-bold text-white">
-                  ${portfolioData.totalDeposited}
-                </p>
-              </CardContent>
-            </Card>
+        {/* Portfolio Overview */}
+        <div className="mb-8 grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+          <Card className="bg-neutral-950">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium text-white">
+                Total Deposited
+              </CardTitle>
+              <DollarSign className="text-muted-foreground h-4 w-4" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold text-white">
+                ${portfolioData.totalDeposited}
+              </div>
+              <p className="text-muted-foreground text-xs">
+                +2.5% from last month
+              </p>
+            </CardContent>
+          </Card>
 
-            <Card className="bg-neutral-950">
-              <CardContent className="p-6">
-                <div className="mb-2 flex items-center gap-2">
-                  <TrendingUp className="text-body h-4 w-4" />
-                  <span className="text-body text-sm">Current Value</span>
-                </div>
-                <p className="font-mono text-2xl font-bold text-white">
-                  ${portfolioData.currentValue}
-                </p>
-              </CardContent>
-            </Card>
+          <Card className="bg-neutral-950">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium text-white">
+                Current Value
+              </CardTitle>
+              <TrendingUp className="text-muted-foreground h-4 w-4" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold text-white">
+                ${portfolioData.currentValue}
+              </div>
+              <p className="text-xs text-green-600">
+                +{portfolioData.gainPercentage}% from deposits
+              </p>
+            </CardContent>
+          </Card>
 
-            <Card className="bg-neutral-950">
-              <CardContent className="p-6">
-                <div className="mb-2 flex items-center gap-2">
-                  <TrendingUp className="text-body h-4 w-4" />
-                  <span className="text-body text-sm">Net Gain</span>
-                </div>
-                <p className="font-mono text-2xl font-bold text-white">
-                  +${portfolioData.netGain}
-                </p>
-                <Badge className="bg-main/10 border-main/80 text-main mt-3 border text-xs">
-                  +{portfolioData.gainPercentage}%
-                </Badge>
-              </CardContent>
-            </Card>
+          <Card className="bg-neutral-950">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium text-white">
+                Net Gain
+              </CardTitle>
+              <Percent className="text-muted-foreground h-4 w-4" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold text-green-600">
+                +${portfolioData.netGain}
+              </div>
+              <p className="text-muted-foreground text-xs">All time</p>
+            </CardContent>
+          </Card>
 
-            <Card className="bg-neutral-950">
-              <CardContent className="p-6">
-                <div className="mb-2 flex items-center gap-2">
-                  <Percent className="text-body h-4 w-4" />
-                  <span className="text-body text-sm">Estimated APY</span>
-                </div>
-                <p className="font-mono text-2xl font-bold text-white">
-                  {portfolioData.estimatedAPY}%
-                </p>
-                <div className="mt-3 flex items-center gap-1">
-                  <Badge
-                    variant="secondary"
-                    className="bg-main/10 border-main/80 text-main border text-xs"
-                  >
-                    +{portfolioData.pztBoost}% PZT Boost
-                  </Badge>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
+          <Card className="bg-neutral-950">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium text-white">
+                Estimated APY
+              </CardTitle>
+              <Settings className="text-muted-foreground h-4 w-4" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold text-white">
+                {portfolioData.estimatedAPY}%
+              </div>
+              <p className="text-muted-foreground text-xs">+0.5% PZT boost</p>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Action Buttons */}
+        <div className="mb-8 flex flex-wrap gap-4">
+          <DepositModal />
+          <WithdrawModal />
+          <Button
+            variant="outline"
+            className="border-main text-main hover:bg-main hover:text-white"
+          >
+            <Settings className="mr-2 h-4 w-4" />
+            Settings
+          </Button>
         </div>
 
         {/* Main Content Grid */}
         <div className="mb-8 grid gap-8 lg:grid-cols-3">
           <div className="lg:col-span-1">
-            <AllocationChart totalValue={`$${portfolioData.currentValue}`} />
+            <AllocationChart totalValue={`${portfolioData.currentValue}`} />
           </div>
 
           <div className="space-y-6 lg:col-span-2">
-            <PredictedMove />
+            <PredictedMove predictions={predictions.data as any} />
 
             <Card className="bg-neutral-950">
               <CardHeader>
@@ -145,7 +213,7 @@ export default function Dashboard() {
         </div>
 
         {/* Activity History */}
-        <ActivityHistory />
+        <ActivityHistory activities={activity.data} />
       </>
     </div>
   );

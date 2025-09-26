@@ -3,6 +3,7 @@ import { Manrope } from 'next/font/google';
 import { AppKit } from '../context/appkit';
 import './globals.css';
 import { SidebarProvider } from '@/context/SidebarContext';
+import QueryProvider from '@/context/QueryProvider';
 import NextTopLoader from 'nextjs-toploader';
 
 const manrope = Manrope({
@@ -30,19 +31,20 @@ export default function RootLayout({
         <link rel="icon" href="/icon.svg" sizes="any" />
       </head>
       <body className={`${manrope.className} overflow-x-hidden antialiased`}>
-        <AppKit>
-          <SidebarProvider>
-            {' '}
-            <NextTopLoader
-              color="#9c6bff"
-              crawl={true}
-              showSpinner={true}
-              easing="ease"
-              speed={200}
-            />
-            {children}
-          </SidebarProvider>
-        </AppKit>
+        <QueryProvider>
+          <AppKit>
+            <SidebarProvider>
+              <NextTopLoader
+                color="#9c6bff"
+                crawl={true}
+                showSpinner={true}
+                easing="ease"
+                speed={200}
+              />
+              {children}
+            </SidebarProvider>
+          </AppKit>
+        </QueryProvider>
       </body>
     </html>
   );
