@@ -131,28 +131,10 @@
   }
 
   body {
-    @apply bg-linear-90 from-body-bg via-body-bg-alt via-50% to-body-bg font-parkinsans text-body;
+    @apply bg-linear-90 from-body-bg via-body-bg-alt via-50% to-body-bg font-parkinsans text-neutral-400;
   }
 
   section {
     @apply bg-linear-90 from-body-bg via-body-bg-alt via-50% to-body-bg font-parkinsans;
-  }
-}
-
-/* 
-
-*/
-
-@layer base {
-  * {
-    @apply border-border outline-ring/50;
-  }
-
-  body {
-    @apply bg-body-bg text-body;
-  }
-
-  section {
-    @apply bg-body-bg;
   }
 }

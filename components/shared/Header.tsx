@@ -42,7 +42,7 @@ export default function Header() {
 
         <Link href="/">
           <Image
-            src="/images/brand/Prezopt_2Jujora.svg"
+            src="/images/brand/prezopt-new.svg"
             width={1174}
             height={263}
             alt="Prezopt Logo"
@@ -61,7 +61,7 @@ export default function Header() {
           ))}
         </nav>
         <div className="flex items-center gap-4">
-          {/* <WalletConnection /> */}
+          <WalletConnection />
 
           <Button
             variant="ghost"

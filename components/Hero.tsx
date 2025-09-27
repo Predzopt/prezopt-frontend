@@ -48,7 +48,7 @@ export default function Hero() {
         className="absolute -bottom-24 -left-10 h-[400px] w-[300px] rotate-[140deg] object-cover mix-blend-difference"
       />
 
-      <div className="absolute top-0 left-0 h-full w-full px-4 py-20 pt-40">
+      <div className="absolute top-0 left-0 h-full w-full flex justify-center items-center flex-col px-4 py-20 pt-40">
         <div className="bg-main/30 absolute top-1/2 left-1/2 size-[20rem] translate-[-50%] rounded-full blur-[100px]" />
         {/* <ParticleBackground /> */}
         <div className="relative z-10 container mx-auto max-w-2xl text-center">
@@ -65,7 +65,7 @@ export default function Hero() {
 
           {!isConnected ? (
             <div className="flex flex-col items-center justify-center gap-4 sm:flex-row">
-              {/* <WalletConnection /> */}
+              <WalletConnection />
               <Button
                 variant="outline"
                 className="h-11 rounded-[10px] px-4 py-3.5 opacity-100 shadow-[inset_0_0.6px_0.6px_-1.58px_rgba(255,255,255,0.894),inset_0_2.28px_2.28px_-3.16px_rgba(255,255,255,0.745),inset_0_10px_10px_-4.75px_rgba(255,255,255,0.05)] backdrop-blur-[5px] duration-300 will-change-auto [background:linear-gradient(rgba(28,28,28,0.1)_0%,rgba(18,18,18,0.2)_100%)_rgba(0,0,0,0)]"

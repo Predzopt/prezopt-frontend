@@ -56,7 +56,7 @@ export default function ProtocolStats({ stats }: ProtocolStatsProps) {
       {statsToShow.map((stat, index) => (
         <Card
           key={index}
-          className="bg-body-bg grid grid-cols-[2fr_1fr] items-center gap-[15px] border-2 !border-[#AFA1CD] p-6"
+          className="bg-body-bg grid grid-cols-[2fr_1fr] items-center gap-[15px] border-2 !border-[#AFA1CD]/10 p-6"
         >
           <div>
             <p className="text-4xl font-semibold text-white">{stat.value}</p>
