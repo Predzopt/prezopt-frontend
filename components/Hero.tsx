@@ -6,12 +6,12 @@ import { Button } from './ui/button';
 import { ArrowRight } from 'lucide-react';
 import Image from 'next/image';
 import { motion } from 'motion/react';
-import { useAppKitAccount } from '@reown/appkit/react';
+import { useWallet } from '@/context/WalletContext';
 
 const MotionImage = motion.create(Image);
 
 export default function Hero() {
-  const { isConnected } = useAppKitAccount();
+  const { isConnected } = useWallet();
   return (
     <section className="relative h-screen w-full flex-col items-center justify-center overflow-hidden bg-none">
       {/* px-4 py-20 pt-40 */}

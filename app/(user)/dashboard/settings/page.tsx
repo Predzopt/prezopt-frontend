@@ -109,7 +109,6 @@ export default function Settings() {
                   className="data-[state=checked]:bg-main data-[state=unchecked]:bg-neutral-400"
                   checked={autoCompound}
                   onCheckedChange={setAutoCompound}
-               
                 />
               </div>
 

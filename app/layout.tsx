@@ -1,8 +1,8 @@
 import type { Metadata } from 'next';
 import { Manrope } from 'next/font/google';
-import { AppKit } from '../context/appkit';
 import './globals.css';
 import { SidebarProvider } from '@/context/SidebarContext';
+import { WalletProvider } from '@/context/WalletContext';
 import QueryProvider from '@/context/QueryProvider';
 import NextTopLoader from 'nextjs-toploader';
 
@@ -32,7 +32,7 @@ export default function RootLayout({
       </head>
       <body className={`${manrope.className} overflow-x-hidden antialiased`}>
         <QueryProvider>
-          <AppKit>
+          <WalletProvider>
             <SidebarProvider>
               <NextTopLoader
                 color="#9c6bff"
@@ -43,7 +43,7 @@ export default function RootLayout({
               />
               {children}
             </SidebarProvider>
-          </AppKit>
+          </WalletProvider>
         </QueryProvider>
       </body>
     </html>
