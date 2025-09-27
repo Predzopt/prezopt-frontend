@@ -6,7 +6,6 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
-import { Progress } from '@/components/ui/progress';
 import {
   Coins,
   ArrowRight,
@@ -438,9 +437,9 @@ export default function MintPage() {
             </CardHeader>
             <CardContent className="space-y-3">
               <div className="space-y-2 text-sm text-gray-400">
-                <p>1. Make sure you're on BlockDAG network</p>
+                <p>1. Make sure you&apos;re on BlockDAG network</p>
                 <p>2. Enter the amount of USDC you want to mint</p>
-                <p>3. Click "Mint USDC" to execute the transaction</p>
+                <p>3. Click &quot;Mint USDC&quot; to execute the transaction</p>
                 <p>4. Confirm the transaction in your wallet</p>
                 <p>5. Wait for the transaction to be confirmed</p>
                 <p>6. Your balance will be updated automatically</p>

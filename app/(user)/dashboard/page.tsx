@@ -17,8 +17,6 @@ import {
   Loader2,
   AlertCircle,
 } from 'lucide-react';
-import Link from 'next/link';
-import { useDashboardData } from '@/hooks/useApi';
 import { usePortfolioMetrics } from '@/hooks/usePortfolio';
 
 export default function Dashboard() {
