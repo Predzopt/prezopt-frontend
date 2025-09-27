@@ -171,6 +171,55 @@ class BlockchainService {
     return receipt;
   }
 
+  // Deposit with automatic Aave strategy allocation
+  async depositWithAaveStrategy(amount: string) {
+    if (!this.simulator) throw new Error('Simulator not initialized');
+    const address = await this.signer!.getAddress();
+
+    // First, perform the deposit
+    const depositReceipt = await this.deposit(amount);
+
+    // Then, ensure all funds are allocated to Aave strategy
+    // We need to rebalance from any other strategy to Aave
+    try {
+      // Get current strategy allocations to see if we need to rebalance
+      const strategies = await this.getStrategies();
+
+      // Check if there are any funds in non-Aave strategies that need to be moved
+      let needsRebalance = false;
+      let fromStrategy = -1;
+
+      for (let i = 0; i < strategies.length; i++) {
+        if (i !== STRATEGIES.AAVE && strategies[i].allocation > 0) {
+          needsRebalance = true;
+          fromStrategy = i;
+          break;
+        }
+      }
+
+      // If we need to rebalance, move funds to Aave
+      if (needsRebalance && fromStrategy !== -1) {
+        console.log(
+          `Rebalancing from strategy ${fromStrategy} to Aave (${STRATEGIES.AAVE})`
+        );
+        const rebalanceTx = await this.simulator.rebalance(
+          fromStrategy,
+          STRATEGIES.AAVE
+        );
+        await rebalanceTx.wait();
+        console.log('Successfully rebalanced to Aave strategy');
+      }
+    } catch (error) {
+      console.warn(
+        'Failed to rebalance to Aave strategy after deposit:',
+        error
+      );
+      // Don't throw error here as deposit was successful
+    }
+
+    return depositReceipt;
+  }
+
   async withdraw(shares: string) {
     if (!this.simulator) throw new Error('Simulator not initialized');
     const address = await this.signer!.getAddress();
@@ -264,12 +313,13 @@ class BlockchainService {
       // Calculate net deposited (deposits - withdrawals)
       const netDeposited = totalDeposited - totalWithdrawn;
 
-      // Calculate net gain (current value - net deposited)
-      const netGain = currentValue - netDeposited;
-      const netGainPercent =
-        netDeposited > 0 ? (netGain / netDeposited) * 100 : 0;
+      // Since deposits always use Aave strategy, show Aave's APY specifically
+      const aaveStrategy = strategies.find(
+        (strategy: any) => strategy.name === 'Aave'
+      );
+      const aaveAPY = aaveStrategy ? aaveStrategy.apyValue : 0;
 
-      // Calculate weighted average APY from strategies
+      // Keep weighted average calculation for backward compatibility
       const totalAllocation = strategies.reduce(
         (sum: number, strategy: any) => sum + strategy.allocation,
         0
@@ -283,12 +333,17 @@ class BlockchainService {
             ) / totalAllocation
           : 0;
 
+      // Calculate net gain using Aave's APY since deposits always use Aave
+      const netGain = (aaveAPY / 10000) * currentValue;
+      const netGainPercent =
+        netDeposited > 0 ? (netGain / netDeposited) * 100 : 0;
+
       return {
         totalDeposited: netDeposited.toFixed(2),
         currentValue: currentValue.toFixed(2),
         netGain: netGain.toFixed(2),
         netGainPercent: netGainPercent.toFixed(2),
-        estimatedAPY: weightedAPY.toFixed(2),
+        estimatedAPY: aaveAPY.toFixed(2), // Use Aave's APY since deposits always use Aave
         shares: userData.shares,
         sharePrice: vaultStats.sharePrice,
         totalAssets: vaultStats.totalAssets,
@@ -458,6 +513,21 @@ class BlockchainService {
   calculateAPY(principal: number, final: number, days: number): string {
     const apy = (Math.pow(final / principal, 365 / days) - 1) * 100;
     return apy.toFixed(2) + '%';
+  }
+
+  // Refresh strategy data from smart contract
+  async refreshStrategyData() {
+    if (!this.simulator) throw new Error('Simulator not initialized');
+
+    try {
+      console.log('🔄 Fetching latest strategy data from smart contract...');
+      const strategies = await this.getStrategies();
+      console.log('📊 Updated strategies from contract:', strategies);
+      return strategies;
+    } catch (error) {
+      console.error('❌ Failed to refresh strategy data:', error);
+      throw error;
+    }
   }
 }
 

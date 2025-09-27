@@ -23,12 +23,14 @@ interface DepositModalProps {
   trigger?: React.ReactNode;
   walletBalance?: string; // This is now simulated balance from getUserData()
   onSuccess?: () => void;
+  onStrategyUpdate?: () => void; // Callback to refresh strategy data
 }
 
 export default function DepositModal({
   trigger,
   walletBalance = '0.00',
   onSuccess,
+  onStrategyUpdate,
 }: DepositModalProps) {
   const { isConnected, provider, signer } = useWallet();
   const [open, setOpen] = useState(false);
@@ -124,13 +126,26 @@ export default function DepositModal({
         await blockchainService.mintUSDC(amount); // Gives user USDC
       });
 
-      // Then deposit it
+      // Then deposit it with Aave strategy
       await safeContractCall(async () => {
-        await blockchainService.deposit(amount);
+        await blockchainService.depositWithAaveStrategy(amount);
       });
 
       setStep(2); // Go directly to success
       onSuccess?.();
+
+      // Refetch strategy data from smart contract after successful deposit
+      try {
+        console.log('🔄 Refreshing strategy data after deposit...');
+        await blockchainService.refreshStrategyData();
+        console.log('✅ Strategy data refreshed successfully after deposit');
+        onStrategyUpdate?.();
+      } catch (error) {
+        console.error(
+          '❌ Failed to refresh strategy data after deposit:',
+          error
+        );
+      }
     } catch (err: any) {
       setError(`Deposit failed: ${err.message}`);
       console.error('Deposit error:', err);
@@ -157,7 +172,10 @@ export default function DepositModal({
         if (!isOpen) resetModal();
       }}
     >
-      <DialogTrigger asChild className={cn(btnStyle)}>
+      <DialogTrigger
+        asChild
+        className={cn(btnStyle, 'bg-transparent text-white hover:text-white')}
+      >
         {trigger || (
           <Button>
             <Plus className="mr-2 h-4 w-4" />
@@ -223,6 +241,12 @@ export default function DepositModal({
                           {vaultStats.totalAssets} USDC
                         </span>
                       </div>
+                      <div className="flex justify-between">
+                        <span>Strategy:</span>
+                        <Badge variant="secondary" className="text-xs">
+                          Aave
+                        </Badge>
+                      </div>
                     </div>
                   </CardContent>
                 </Card>
@@ -250,6 +274,9 @@ export default function DepositModal({
                 <h3 className="text-lg font-semibold">Deposit Successful!</h3>
                 <p className="text-muted-foreground">
                   You received {sharesToReceive} PYO shares
+                </p>
+                <p className="text-muted-foreground text-sm">
+                  Funds allocated to Aave strategy
                 </p>
               </div>
               <Badge variant="secondary" className="text-xs">

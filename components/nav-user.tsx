@@ -36,8 +36,8 @@ export function NavUser() {
     return `${addr.slice(0, 6)}...${addr.slice(-4)}`;
   };
 
-  const handleDisconnect = () => {
-    disconnect();
+  const handleDisconnect = async () => {
+    await disconnect();
   };
 
   return (

@@ -21,6 +21,7 @@ import {
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useWallet } from '@/context/WalletContext';
+import { useRouter } from 'next/navigation';
 
 interface WalletConnectionModalProps {
   trigger?: React.ReactNode;
@@ -30,8 +31,10 @@ export default function WalletConnectionModal({
   trigger,
 }: WalletConnectionModalProps) {
   const { isConnected, address, connect, disconnect } = useWallet();
+  const router = useRouter();
 
   const [isConnecting, setIsConnecting] = useState(false);
+  const [isDisconnecting, setIsDisconnecting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [open, setOpen] = useState(false);
 
@@ -54,9 +57,22 @@ export default function WalletConnectionModal({
     }
   };
 
-  const handleDisconnect = () => {
-    disconnect();
-    setOpen(false);
+  const handleDisconnect = async () => {
+    setIsDisconnecting(true);
+    setError(null);
+
+    try {
+      await disconnect();
+      setOpen(false);
+      router.push('/');
+    } catch (err) {
+      console.error('Disconnection error:', err);
+      setError(
+        err instanceof Error ? err.message : 'Failed to disconnect wallet'
+      );
+    } finally {
+      setIsDisconnecting(false);
+    }
   };
 
   return (
@@ -65,7 +81,7 @@ export default function WalletConnectionModal({
         {trigger || (
           <Button
             className={cn(
-              'border-main/50 relative flex h-11 origin-center items-center gap-2 rounded-[10px] border px-4 py-3.5 opacity-100 shadow-[inset_0_0_16px_0_rgb(55,8,150)] will-change-auto [background:linear-gradient(rgba(20,9,43,0.51)_0%,rgba(20,9,43,0.51)_50%,rgba(20,9,43,0.51)_100%)_rgba(20,9,43,0.51)] hover:shadow-[inset_0_0_16px_0_rgb(95,35,217)]',
+              'border-main/50 relative flex h-11 origin-center items-center gap-2 rounded-[10px] border px-4 py-3.5 text-white opacity-100 shadow-[inset_0_0_16px_0_rgb(55,8,150)] will-change-auto [background:linear-gradient(rgba(20,9,43,0.51)_0%,rgba(20,9,43,0.51)_50%,rgba(20,9,43,0.51)_100%)_rgba(20,9,43,0.51)] hover:bg-transparent hover:text-white hover:shadow-[inset_0_0_16px_0_rgb(95,35,217)]',
               "after:pointer-events-none after:absolute after:top-0 after:left-0 after:box-border after:h-full after:w-full after:rounded-[inherit] after:content-['']"
             )}
           >
@@ -197,9 +213,19 @@ export default function WalletConnectionModal({
                 onClick={handleDisconnect}
                 variant="destructive"
                 className="w-full"
+                disabled={isDisconnecting}
               >
-                <X className="mr-2 h-4 w-4" />
-                Disconnect
+                {isDisconnecting ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Disconnecting...
+                  </>
+                ) : (
+                  <>
+                    <X className="mr-2 h-4 w-4" />
+                    Disconnect
+                  </>
+                )}
               </Button>
             </div>
           )}

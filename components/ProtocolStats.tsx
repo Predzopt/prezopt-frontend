@@ -1,6 +1,8 @@
 import { Card } from '@/components/ui/card';
 import { TrendingUp, Users, DollarSign, Percent } from 'lucide-react';
 import Image from 'next/image';
+import { motion } from 'motion/react';
+import ScrollAnimation from './ScrollAnimation';
 
 interface StatItem {
   label: string;
@@ -53,17 +55,44 @@ export default function ProtocolStats({ stats }: ProtocolStatsProps) {
   return (
     <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4 lg:gap-8">
       {statsToShow.map((stat, index) => (
-        <Card
+        <ScrollAnimation
           key={index}
-          className="bg-body-bg grid grid-cols-[2fr_1fr] items-center gap-[15px] border-2 !border-[#AFA1CD]/10 p-6"
+          direction="up"
+          delay={index * 0.1}
+          distance={30}
         >
-          <div>
-            <p className="text-4xl font-semibold text-white">{stat.value}</p>
-            <p className="text-white/70">{stat.label}</p>
-          </div>
+          <motion.div
+            whileHover={{ scale: 1.05, y: -5 }}
+            transition={{ duration: 0.3 }}
+          >
+            <Card className="bg-body-bg grid grid-cols-[2fr_1fr] items-center gap-[15px] border-2 !border-[#AFA1CD]/10 p-6">
+              <div>
+                <motion.p
+                  className="text-4xl font-semibold text-white"
+                  initial={{ scale: 0.8, opacity: 0 }}
+                  whileInView={{ scale: 1, opacity: 1 }}
+                  transition={{ duration: 0.5, delay: index * 0.1 }}
+                  viewport={{ once: true }}
+                >
+                  {stat.value}
+                </motion.p>
+                <p className="text-white/70">{stat.label}</p>
+              </div>
 
-          <Image src={stat.icon} alt={stat.label} width={100} height={100} />
-        </Card>
+              <motion.div
+                whileHover={{ scale: 1.1, rotate: 5 }}
+                transition={{ duration: 0.3 }}
+              >
+                <Image
+                  src={stat.icon}
+                  alt={stat.label}
+                  width={100}
+                  height={100}
+                />
+              </motion.div>
+            </Card>
+          </motion.div>
+        </ScrollAnimation>
       ))}
     </div>
   );

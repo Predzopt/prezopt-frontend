@@ -17,7 +17,8 @@ import {
   Loader2,
   AlertCircle,
 } from 'lucide-react';
-import { usePortfolioMetrics } from '@/hooks/usePortfolio';
+import { usePortfolioMetrics, usePortfolio } from '@/hooks/usePortfolio';
+import { useRef } from 'react';
 
 export default function Dashboard() {
   const {
@@ -30,6 +31,11 @@ export default function Dashboard() {
     isLoading,
     error,
   } = usePortfolioMetrics();
+
+  const { refreshPortfolio } = usePortfolio();
+
+  // Ref to access PredictedMove component methods
+  const predictedMoveRef = useRef<{ refreshCurrentStrategy: () => void }>(null);
 
   // Show loading state
   if (isLoading) {
@@ -83,7 +89,13 @@ export default function Dashboard() {
             Portfolio Summary
           </h2>
           <div className="flex items-center gap-4">
-            <DepositModal />
+            <DepositModal
+              onSuccess={refreshPortfolio}
+              onStrategyUpdate={() => {
+                // Refresh strategy data in PredictedMove component
+                predictedMoveRef.current?.refreshCurrentStrategy();
+              }}
+            />
             <WithdrawModal />
           </div>
         </div>
@@ -148,11 +160,9 @@ export default function Dashboard() {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold text-white">
-                {estimatedAPY}%
+                {Number(estimatedAPY) / 100}%
               </div>
-              <p className="text-muted-foreground text-xs">
-                Weighted average APY
-              </p>
+              <p className="text-muted-foreground text-xs">Aave strategy APY</p>
             </CardContent>
           </Card>
         </div>
@@ -166,7 +176,7 @@ export default function Dashboard() {
           </div>
 
           <div className="space-y-6 lg:col-span-2">
-            <PredictedMove />
+            <PredictedMove ref={predictedMoveRef} />
 
             <Card className="bg-neutral-950">
               <CardHeader>
