@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   Dialog,
   DialogContent,
@@ -12,8 +12,18 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Minus, ArrowRight, CheckCircle } from 'lucide-react';
+import {
+  Minus,
+  ArrowRight,
+  CheckCircle,
+  AlertCircle,
+  Loader2,
+} from 'lucide-react';
 import { btnStyle2, cn } from '@/lib/utils';
+import { useWallet } from '@/context/WalletContext';
+import { blockchainService } from '@/services/blockchainServices';
+import { safeContractCall } from '@/utils/error';
+import { usePortfolioMetrics } from '@/hooks/usePortfolio';
 
 interface WithdrawModalProps {
   trigger?: React.ReactNode;
@@ -24,18 +34,62 @@ interface WithdrawModalProps {
 
 export default function WithdrawModal({
   trigger,
-  sharesBalance = '1,234.56',
-  usdValue = '1,267.89',
+  sharesBalance,
+  usdValue,
   hasStakedPZT = true,
 }: WithdrawModalProps) {
+  const { isConnected, provider, signer } = useWallet();
+  const { shares, currentValue } = usePortfolioMetrics();
   const [open, setOpen] = useState(false);
   const [step, setStep] = useState(1);
   const [amount, setAmount] = useState('');
   const [inputType, setInputType] = useState<'shares' | 'usd'>('shares');
   const [isWithdrawing, setIsWithdrawing] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [isOnBlockDAG, setIsOnBlockDAG] = useState(false);
+  const [isContractDeployed, setIsContractDeployed] = useState(false);
+
+  // Use real data or fallback to props
+  const userShares = sharesBalance || shares;
+  const portfolioValue = usdValue || currentValue;
+
+  // Initialize and fetch data when modal opens
+  useEffect(() => {
+    const fetchData = async () => {
+      if (!isConnected || !provider || !signer) {
+        setError('Wallet not connected');
+        return;
+      }
+
+      try {
+        const initialized = await blockchainService.init(provider, signer);
+        if (!initialized) {
+          setError('Failed to initialize blockchain service');
+          return;
+        }
+
+        // Check network
+        const onBlockDAG = await blockchainService.isOnBlockDAG();
+        setIsOnBlockDAG(onBlockDAG);
+
+        // Check contract deployment
+        const deployed = await blockchainService.isContractDeployed();
+        setIsContractDeployed(deployed);
+
+        // User data is now fetched via usePortfolioMetrics hook
+      } catch (err) {
+        console.error('Failed to fetch data:', err);
+        setError('Failed to load user data');
+      }
+    };
+
+    if (open && isConnected) {
+      fetchData();
+    }
+  }, [open, isConnected, provider, signer]);
 
   const handleMaxClick = () => {
-    setAmount(inputType === 'shares' ? sharesBalance : usdValue);
+    setAmount(inputType === 'shares' ? userShares : portfolioValue);
   };
 
   const calculateOutput = (withdrawAmount: string) => {
@@ -60,18 +114,59 @@ export default function WithdrawModal({
   };
 
   const handleWithdraw = async () => {
+    if (!isConnected || !provider || !signer) {
+      setError('Wallet not connected');
+      return;
+    }
+
+    if (!isOnBlockDAG) {
+      setError('Please switch to BlockDAG network first');
+      return;
+    }
+
+    if (!isContractDeployed) {
+      setError('Contract not deployed on this network');
+      return;
+    }
+
+    if (!amount || parseFloat(amount) <= 0) {
+      setError('Please enter a valid amount');
+      return;
+    }
+
     setIsWithdrawing(true);
-    // Simulate withdrawal
-    setTimeout(() => {
+    setError(null);
+
+    try {
+      const initialized = await blockchainService.init(provider, signer);
+      if (!initialized) {
+        throw new Error('Failed to initialize blockchain service');
+      }
+
+      console.log('Withdrawing:', {
+        amount,
+        inputType,
+        userShares,
+      });
+
+      await safeContractCall(async () => {
+        await blockchainService.withdraw(amount);
+      });
+
       setStep(3);
-      setIsWithdrawing(false);
       console.log('Withdrawal completed:', amount, inputType);
-    }, 2000);
+    } catch (err: any) {
+      console.error('Withdrawal error:', err);
+      setError(err.message || 'Withdrawal failed');
+    } finally {
+      setIsWithdrawing(false);
+    }
   };
 
   const resetModal = () => {
     setStep(1);
     setAmount('');
+    setError(null);
     setOpen(false);
   };
 
@@ -97,6 +192,38 @@ export default function WithdrawModal({
         </DialogHeader>
 
         <div className="space-y-6">
+          {/* Error Messages */}
+          {error && (
+            <div className="flex items-center gap-2 rounded-lg bg-red-500/10 p-3 text-red-400">
+              <AlertCircle className="h-4 w-4" />
+              <span className="text-sm">{error}</span>
+            </div>
+          )}
+
+          {/* Network Status */}
+          {!isOnBlockDAG && isConnected && (
+            <div className="rounded-lg border border-yellow-500/20 bg-yellow-500/10 p-3">
+              <div className="flex items-center gap-2">
+                <AlertCircle className="h-4 w-4 text-yellow-500" />
+                <span className="text-sm text-yellow-500">
+                  Please switch to BlockDAG network to withdraw funds
+                </span>
+              </div>
+            </div>
+          )}
+
+          {/* Contract Status */}
+          {isOnBlockDAG && !isContractDeployed && isConnected && (
+            <div className="rounded-lg border border-red-500/20 bg-red-500/10 p-3">
+              <div className="flex items-center gap-2">
+                <AlertCircle className="h-4 w-4 text-red-500" />
+                <span className="text-sm text-red-500">
+                  Contract not deployed on this network
+                </span>
+              </div>
+            </div>
+          )}
+
           {step === 1 && (
             <div className="space-y-4">
               <Tabs
@@ -126,7 +253,7 @@ export default function WithdrawModal({
                     </Button>
                   </div>
                   <p className="text-muted-foreground text-sm">
-                    Available: {sharesBalance} PYO shares
+                    Available: {userShares} PYO shares
                   </p>
                 </TabsContent>
 
@@ -146,7 +273,7 @@ export default function WithdrawModal({
                     </Button>
                   </div>
                   <p className="text-muted-foreground text-sm">
-                    Portfolio Value: ${usdValue} USDC
+                    Portfolio Value: ${portfolioValue} USDC
                   </p>
                 </TabsContent>
               </Tabs>
@@ -175,7 +302,13 @@ export default function WithdrawModal({
 
               <Button
                 onClick={() => setStep(2)}
-                disabled={!amount || parseFloat(amount) <= 0}
+                disabled={
+                  !amount ||
+                  parseFloat(amount) <= 0 ||
+                  !isConnected ||
+                  !isOnBlockDAG ||
+                  !isContractDeployed
+                }
                 className="w-full"
               >
                 Review Withdrawal
@@ -226,7 +359,14 @@ export default function WithdrawModal({
                   disabled={isWithdrawing}
                   className="flex-1"
                 >
-                  {isWithdrawing ? 'Processing...' : 'Confirm Withdrawal'}
+                  {isWithdrawing ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Processing...
+                    </>
+                  ) : (
+                    'Confirm Withdrawal'
+                  )}
                 </Button>
               </div>
             </div>

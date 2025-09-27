@@ -1,13 +1,12 @@
 import type { Metadata } from 'next';
-import { Manrope } from 'next/font/google';
-import { AppKit } from '../context/appkit';
+import { Poppins } from 'next/font/google';
 import './globals.css';
 import { SidebarProvider } from '@/context/SidebarContext';
+import { WalletProvider } from '@/context/WalletContext';
 import QueryProvider from '@/context/QueryProvider';
 import NextTopLoader from 'nextjs-toploader';
 
-const manrope = Manrope({
-  variable: '--font-manrope',
+const poppins = Poppins({
   subsets: ['latin'],
   weight: ['300', '400', '500', '600', '700'],
   style: 'normal',
@@ -30,9 +29,9 @@ export default function RootLayout({
       <head>
         <link rel="icon" href="/icon.svg" sizes="any" />
       </head>
-      <body className={`${manrope.className} overflow-x-hidden antialiased`}>
+      <body className={`${poppins.className} overflow-x-hidden antialiased`}>
         <QueryProvider>
-          <AppKit>
+          <WalletProvider>
             <SidebarProvider>
               <NextTopLoader
                 color="#9c6bff"
@@ -43,7 +42,7 @@ export default function RootLayout({
               />
               {children}
             </SidebarProvider>
-          </AppKit>
+          </WalletProvider>
         </QueryProvider>
       </body>
     </html>

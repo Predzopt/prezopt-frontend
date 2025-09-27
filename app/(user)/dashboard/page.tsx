@@ -17,50 +17,53 @@ import {
   Loader2,
   AlertCircle,
 } from 'lucide-react';
-import Link from 'next/link';
-import { useDashboardData } from '@/hooks/useApi';
+import { usePortfolioMetrics, usePortfolio } from '@/hooks/usePortfolio';
+import { useRef } from 'react';
 
 export default function Dashboard() {
+  const {
+    totalDeposited,
+    currentValue,
+    netGain,
+    netGainPercent,
+    estimatedAPY,
+    shares,
+    isLoading,
+    error,
+  } = usePortfolioMetrics();
+
+  const { refreshPortfolio } = usePortfolio();
+
+  // Ref to access PredictedMove component methods
+  const predictedMoveRef = useRef<{ refreshCurrentStrategy: () => void }>(null);
+
   // Show loading state
-  // if (isLoading) {
-  //   return (
-  //     <div className="flex min-h-screen items-center justify-center">
-  //       <div className="flex items-center gap-2">
-  //         <Loader2 className="h-6 w-6 animate-spin" />
-  //         <span className="text-white">Loading dashboard data...</span>
-  //       </div>
-  //     </div>
-  //   );
-  // }
+  if (isLoading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <div className="flex items-center gap-2">
+          <Loader2 className="h-6 w-6 animate-spin" />
+          <span className="text-white">Loading portfolio data...</span>
+        </div>
+      </div>
+    );
+  }
 
   // Show error state
-  // if (isError) {
-  //   return (
-  //     <div className="flex min-h-screen items-center justify-center">
-  //       <div className="text-center">
-  //         <AlertCircle className="mx-auto mb-4 h-12 w-12 text-red-500" />
-  //         <h2 className="mb-2 text-xl font-semibold text-white">
-  //           Failed to load data
-  //         </h2>
-  //         <p className="mb-4 text-gray-400">
-  //           There was an error loading the dashboard data.
-  //         </p>
-  //         <Button onClick={() => window.location.reload()}>Try Again</Button>
-  //       </div>
-  //     </div>
-  //   );
-  // }
-
-  // Use real data or fallback to mock data
-  const portfolioData = {
-    totalDeposited: '45,000.00',
-    currentValue: '47,234.56',
-    netGain: '2,234.56', // Calculate from real data
-    gainPercentage: '4.97', // Calculate from real data
-    estimatedAPY: '8.47',
-    pztBoost: '0.5',
-    sharesBalance: '46,156.78',
-  };
+  if (error) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <div className="text-center">
+          <AlertCircle className="mx-auto mb-4 h-12 w-12 text-red-500" />
+          <h2 className="mb-2 text-xl font-semibold text-white">
+            Failed to load portfolio data
+          </h2>
+          <p className="mb-4 text-gray-400">{error}</p>
+          <Button onClick={() => window.location.reload()}>Try Again</Button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen">
@@ -86,7 +89,13 @@ export default function Dashboard() {
             Portfolio Summary
           </h2>
           <div className="flex items-center gap-4">
-            <DepositModal />
+            <DepositModal
+              onSuccess={refreshPortfolio}
+              onStrategyUpdate={() => {
+                // Refresh strategy data in PredictedMove component
+                predictedMoveRef.current?.refreshCurrentStrategy();
+              }}
+            />
             <WithdrawModal />
           </div>
         </div>
@@ -102,10 +111,10 @@ export default function Dashboard() {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold text-white">
-                ${portfolioData.totalDeposited}
+                ${totalDeposited}
               </div>
               <p className="text-muted-foreground text-xs">
-                +2.5% from last month
+                Total amount deposited
               </p>
             </CardContent>
           </Card>
@@ -119,10 +128,10 @@ export default function Dashboard() {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold text-white">
-                ${portfolioData.currentValue}
+                ${currentValue}
               </div>
               <p className="text-xs text-green-600">
-                +{portfolioData.gainPercentage}% from deposits
+                +{netGainPercent}% from deposits
               </p>
             </CardContent>
           </Card>
@@ -136,7 +145,7 @@ export default function Dashboard() {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold text-green-600">
-                +${portfolioData.netGain}
+                +${netGain}
               </div>
               <p className="text-muted-foreground text-xs">All time</p>
             </CardContent>
@@ -151,9 +160,9 @@ export default function Dashboard() {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold text-white">
-                {portfolioData.estimatedAPY}%
+                {Number(estimatedAPY) / 100}%
               </div>
-              <p className="text-muted-foreground text-xs">+0.5% PZT boost</p>
+              <p className="text-muted-foreground text-xs">Aave strategy APY</p>
             </CardContent>
           </Card>
         </div>
@@ -163,11 +172,11 @@ export default function Dashboard() {
         {/* Main Content Grid */}
         <div className="mb-8 grid gap-8 lg:grid-cols-3">
           <div className="lg:col-span-1">
-            <AllocationChart totalValue={`${portfolioData.currentValue}`} />
+            <AllocationChart totalValue={`${currentValue}`} />
           </div>
 
           <div className="space-y-6 lg:col-span-2">
-            <PredictedMove />
+            <PredictedMove ref={predictedMoveRef} />
 
             <Card className="bg-neutral-950">
               <CardHeader>

@@ -1,7 +1,4 @@
 import { AppSidebar } from '@/components/app-sidebar';
-import { ChartAreaInteractive } from '@/components/chart-area-interactive';
-import { DataTable } from '@/components/data-table';
-import { SectionCards } from '@/components/section-cards';
 import { SiteHeader } from '@/components/site-header';
 import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar';
 
@@ -22,7 +19,7 @@ export default function AdminLayout({
         }
       >
         <AppSidebar variant="inset" />
-        <SidebarInset className="bg-neutral-900/40">
+        <SidebarInset className="bg-neutral-900">
           <SiteHeader />
           <div className="flex flex-1 flex-col p-6">{children}</div>
         </SidebarInset>
