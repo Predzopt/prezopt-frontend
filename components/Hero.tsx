@@ -48,7 +48,7 @@ export default function Hero() {
         className="absolute -bottom-24 -left-10 h-[400px] w-[300px] rotate-[140deg] object-cover mix-blend-difference"
       />
 
-      <div className="absolute top-0 left-0 h-full w-full px-4 py-20 pt-40">
+      <div className="absolute top-0 left-0 h-full w-full flex justify-center items-center flex-col px-4 py-20 pt-40">
         <div className="bg-main/30 absolute top-1/2 left-1/2 size-[20rem] translate-[-50%] rounded-full blur-[100px]" />
         {/* <ParticleBackground /> */}
         <div className="relative z-10 container mx-auto max-w-2xl text-center">
@@ -88,7 +88,7 @@ export default function Hero() {
         </div>
 
         <div className="z-10 flex w-full items-center justify-center pt-20">
-          <MotionImage
+          {/* <MotionImage
             animate={{ rotate: 360 }}
             transition={{
               repeat: Infinity,
@@ -101,7 +101,8 @@ export default function Hero() {
             height={500}
             alt="globe"
             className="a"
-          />
+            priority
+          /> */}
         </div>
       </div>
     </section>
