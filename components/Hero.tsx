@@ -7,7 +7,6 @@ import { ArrowRight } from 'lucide-react';
 import Image from 'next/image';
 import { motion } from 'motion/react';
 import { useAppKitAccount } from '@reown/appkit/react';
-import LiquidEther from './LiquidEther';
 
 const MotionImage = motion.create(Image);
 
@@ -27,25 +26,6 @@ export default function Hero() {
       {/* <div style={{ width: '100%', height: 600, position: 'relative' }}>
        
       </div> */}
-
-      <LiquidEther
-        colors={['#5227FF', '#FF9FFC', '#B19EEF']}
-        mouseForce={20}
-        cursorSize={100}
-        isViscous={false}
-        viscous={30}
-        iterationsViscous={32}
-        iterationsPoisson={32}
-        resolution={0.5}
-        isBounce={false}
-        autoDemo={true}
-        autoSpeed={0.5}
-        autoIntensity={2.2}
-        takeoverDuration={0.25}
-        autoResumeDelay={3000}
-        autoRampDuration={0.6}
-        className="absolute top-0 left-0 h-full w-full"
-      />
 
       <MotionImage
         initial={{ opacity: 0, scale: 0 }}
