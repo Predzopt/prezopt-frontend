@@ -1,5 +1,4 @@
 import { Card } from '@/components/ui/card';
-import { cn } from '@/lib/utils';
 import { TrendingUp, Users, DollarSign, Percent } from 'lucide-react';
 
 interface StatItem {

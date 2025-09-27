@@ -1,8 +1,6 @@
 'use client';
 
-import { Button } from '@/components/ui/button';
-import { Wallet, Check } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { Check } from 'lucide-react';
 import { useWallet } from '@/context/WalletContext';
 import WalletConnectionModal from './WalletConnectionModal';
 

@@ -146,7 +146,7 @@ export default function WalletConnectionModal({
 
               <div className="text-center">
                 <p className="text-muted-foreground text-xs">
-                  Don't have MetaMask?{' '}
+                  Don&apos;t have MetaMask?{' '}
                   <a
                     href="https://metamask.io/download/"
                     target="_blank"
