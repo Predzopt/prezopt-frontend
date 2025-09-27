@@ -13,8 +13,6 @@ export default function Header() {
 
   useEffect(() => {
     function handleScroll() {
-      console.log('SCROLLER', window.scrollY >= 100, window);
-
       if (window.scrollY >= 100) {
         setCanShrink(true);
       } else {
