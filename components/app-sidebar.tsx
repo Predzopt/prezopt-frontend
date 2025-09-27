@@ -12,7 +12,7 @@ import {
   SidebarMenuItem,
 } from '@/components/ui/sidebar';
 import { BiSolidDashboard } from 'react-icons/bi';
-import { FaBalanceScale, FaCoins } from 'react-icons/fa';
+import { FaBalanceScale, FaCoins, FaPlus } from 'react-icons/fa';
 import { IoSettings } from 'react-icons/io5';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -33,6 +33,11 @@ const data = {
       icon: FaCoins,
       title: 'Staking',
       url: '/dashboard/staking',
+    },
+    {
+      icon: FaPlus,
+      title: 'Mint',
+      url: '/dashboard/mint',
     },
     {
       icon: FaBalanceScale,

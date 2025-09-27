@@ -1,4 +1,5 @@
-import { useState } from 'react';
+// DepositModal.tsx
+import { useState, useEffect } from 'react';
 import {
   Dialog,
   DialogContent,
@@ -7,36 +8,88 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
+import { ethers } from 'ethers'; // Only import ethers for utils if needed
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Plus, ArrowRight, CheckCircle } from 'lucide-react';
+import { Plus, ArrowRight, CheckCircle, AlertCircle } from 'lucide-react';
 import { btnStyle, cn } from '@/lib/utils';
+import { blockchainService } from '@/services/blockchainServices';
+import { safeContractCall } from '@/utils/error';
+import { useWallet } from '@/context/WalletContext';
 
 interface DepositModalProps {
   trigger?: React.ReactNode;
-  walletBalance?: string;
+  walletBalance?: string; // This is now simulated balance from getUserData()
+  onSuccess?: () => void;
+  onStrategyUpdate?: () => void; // Callback to refresh strategy data
 }
 
 export default function DepositModal({
   trigger,
-  walletBalance = '1,234.56',
+  walletBalance = '0.00',
+  onSuccess,
+  onStrategyUpdate,
 }: DepositModalProps) {
+  const { isConnected, provider, signer } = useWallet();
   const [open, setOpen] = useState(false);
   const [step, setStep] = useState(1);
   const [amount, setAmount] = useState('');
-  const [isApproving, setIsApproving] = useState(false);
   const [isDepositing, setIsDepositing] = useState(false);
-  const [approved, setApproved] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [vaultStats, setVaultStats] = useState<any>(null);
+  const [userBalance, setUserBalance] = useState<string>('0.00');
+  const [isOnBlockDAG, setIsOnBlockDAG] = useState(false);
+  const [isSwitching, setIsSwitching] = useState(false);
+
+  // Initialize and fetch data when modal opens
+  useEffect(() => {
+    const fetchData = async () => {
+      if (!isConnected || !provider || !signer) {
+        setError('Wallet not connected');
+        return;
+      }
+
+      try {
+        const initialized = await blockchainService.init(provider, signer);
+        if (!initialized) {
+          setError('Failed to initialize blockchain service');
+          return;
+        }
+
+        // Check network
+        const onBlockDAG = await blockchainService.isOnBlockDAG();
+        setIsOnBlockDAG(onBlockDAG);
+
+        const [stats, userData] = await Promise.all([
+          blockchainService.getVaultStats(),
+          blockchainService.getUserData(),
+        ]);
+        setVaultStats(stats);
+        setUserBalance(userData.usdcBalance);
+      } catch (err) {
+        console.error('Failed to fetch data:', err);
+        setError('Failed to load vault data');
+      }
+    };
+
+    if (open && isConnected) {
+      fetchData();
+    }
+  }, [open, isConnected, provider, signer]);
 
   const handleMaxClick = () => {
-    setAmount(walletBalance);
+    setAmount(userBalance);
   };
 
   const calculateShares = (depositAmount: string) => {
+    if (!vaultStats || !depositAmount) return '0.00';
     const value = parseFloat(depositAmount) || 0;
-    return (value * 0.98).toFixed(2); // 2% fee
+    // sharePrice is in 18 decimals (as per your service), but represents USDC/share
+    const sharePrice = parseFloat(vaultStats.sharePrice); // already formatted to string
+    if (sharePrice <= 0) return '0.00';
+    return (value / sharePrice).toFixed(6);
   };
 
   const calculateFees = (depositAmount: string) => {
@@ -50,38 +103,79 @@ export default function DepositModal({
     };
   };
 
-  const handleApprove = async () => {
-    setIsApproving(true);
-    // Simulate approval
-    setTimeout(() => {
-      setApproved(true);
-      setIsApproving(false);
-      console.log('USDC spending approved');
-    }, 2000);
-  };
-
   const handleDeposit = async () => {
+    if (!amount || parseFloat(amount) <= 0) return;
+
+    if (!isConnected || !provider || !signer) {
+      setError('Wallet not connected');
+      return;
+    }
+
     setIsDepositing(true);
-    // Simulate deposit
-    setTimeout(() => {
-      setStep(4);
+    setError(null);
+
+    try {
+      const initialized = await blockchainService.init(provider, signer);
+      if (!initialized) {
+        throw new Error('Failed to initialize blockchain service');
+      }
+
+      // Optional: Mint USDC first if this is a simulator (only for demo!)
+      // Remove this in production if users bring real USDC
+      await safeContractCall(async () => {
+        await blockchainService.mintUSDC(amount); // Gives user USDC
+      });
+
+      // Then deposit it with Aave strategy
+      await safeContractCall(async () => {
+        await blockchainService.depositWithAaveStrategy(amount);
+      });
+
+      setStep(2); // Go directly to success
+      onSuccess?.();
+
+      // Refetch strategy data from smart contract after successful deposit
+      try {
+        console.log('🔄 Refreshing strategy data after deposit...');
+        await blockchainService.refreshStrategyData();
+        console.log('✅ Strategy data refreshed successfully after deposit');
+        onStrategyUpdate?.();
+      } catch (error) {
+        console.error(
+          '❌ Failed to refresh strategy data after deposit:',
+          error
+        );
+      }
+    } catch (err: any) {
+      setError(`Deposit failed: ${err.message}`);
+      console.error('Deposit error:', err);
+    } finally {
       setIsDepositing(false);
-      console.log('Deposit completed:', amount, 'USDC');
-    }, 2000);
+    }
   };
 
   const resetModal = () => {
     setStep(1);
     setAmount('');
-    setApproved(false);
+    setError(null);
     setOpen(false);
   };
 
   const fees = calculateFees(amount);
+  const sharesToReceive = calculateShares(amount);
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild className={cn(btnStyle)}>
+    <Dialog
+      open={open}
+      onOpenChange={isOpen => {
+        setOpen(isOpen);
+        if (!isOpen) resetModal();
+      }}
+    >
+      <DialogTrigger
+        asChild
+        className={cn(btnStyle, 'bg-transparent text-white hover:text-white')}
+      >
         {trigger || (
           <Button>
             <Plus className="mr-2 h-4 w-4" />
@@ -93,11 +187,18 @@ export default function DepositModal({
         <DialogHeader>
           <DialogTitle>
             {step === 1 && 'Deposit USDC'}
-            {step === 2 && 'Review Deposit'}
-            {step === 3 && 'Confirm Transaction'}
-            {step === 4 && 'Deposit Successful'}
+            {step === 2 && 'Deposit Successful'}
           </DialogTitle>
         </DialogHeader>
+
+        {error && (
+          <div className="bg-destructive/10 border-destructive/20 rounded-lg border p-3">
+            <div className="text-destructive flex items-center gap-2 text-sm">
+              <AlertCircle className="h-4 w-4" />
+              <span>{error}</span>
+            </div>
+          </div>
+        )}
 
         <div className="space-y-6">
           {step === 1 && (
@@ -112,117 +213,57 @@ export default function DepositModal({
                     value={amount}
                     onChange={e => setAmount(e.target.value)}
                     className="font-mono"
+                    step="0.01"
+                    min="0"
                   />
                   <Button variant="outline" onClick={handleMaxClick}>
                     Max
                   </Button>
                 </div>
                 <p className="text-muted-foreground mt-1 text-sm">
-                  Wallet Balance: {walletBalance} USDC
+                  Wallet Balance: {userBalance} USDC
                 </p>
               </div>
 
+              {vaultStats && (
+                <Card>
+                  <CardContent className="p-3">
+                    <div className="space-y-1 text-xs">
+                      <div className="flex justify-between">
+                        <span>Current Share Price:</span>
+                        <span className="font-mono">
+                          {vaultStats.sharePrice} USDC
+                        </span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span>Total Assets:</span>
+                        <span className="font-mono">
+                          {vaultStats.totalAssets} USDC
+                        </span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span>Strategy:</span>
+                        <Badge variant="secondary" className="text-xs">
+                          Aave
+                        </Badge>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
+
               <Button
-                onClick={() => setStep(2)}
-                disabled={!amount || parseFloat(amount) <= 0}
+                onClick={handleDeposit}
+                disabled={!amount || parseFloat(amount) <= 0 || isDepositing}
                 className="w-full"
               >
-                Review Deposit
+                {isDepositing ? 'Depositing...' : 'Confirm Deposit'}
                 <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
             </div>
           )}
 
           {step === 2 && (
-            <div className="space-y-4">
-              <Card>
-                <CardContent className="space-y-3 p-4">
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">
-                      Deposit Amount
-                    </span>
-                    <span className="font-mono">{amount} USDC</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">
-                      PYO Shares Received
-                    </span>
-                    <span className="text-success font-mono">
-                      {calculateShares(amount)} PYO
-                    </span>
-                  </div>
-                  <div className="border-t pt-3">
-                    <p className="mb-2 text-sm font-medium">
-                      Fee Breakdown (2%)
-                    </p>
-                    <div className="space-y-1 text-sm">
-                      <div className="flex justify-between">
-                        <span>$PZT Stakers (60%)</span>
-                        <span className="font-mono">{fees.stakers} USDC</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span>Treasury (30%)</span>
-                        <span className="font-mono">{fees.treasury} USDC</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span>Keepers (10%)</span>
-                        <span className="font-mono">{fees.keepers} USDC</span>
-                      </div>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-
-              <div className="flex gap-2">
-                <Button
-                  variant="outline"
-                  onClick={() => setStep(1)}
-                  className="flex-1"
-                >
-                  Back
-                </Button>
-                <Button onClick={() => setStep(3)} className="flex-1">
-                  Proceed
-                </Button>
-              </div>
-            </div>
-          )}
-
-          {step === 3 && (
-            <div className="space-y-4">
-              {!approved ? (
-                <div className="space-y-3">
-                  <p className="text-muted-foreground text-sm">
-                    First, approve USDC spending allowance for the Prezopt
-                    contract.
-                  </p>
-                  <Button
-                    onClick={handleApprove}
-                    disabled={isApproving}
-                    className="w-full"
-                  >
-                    {isApproving ? 'Approving...' : 'Approve USDC'}
-                  </Button>
-                </div>
-              ) : (
-                <div className="space-y-3">
-                  <div className="text-success flex items-center gap-2">
-                    <CheckCircle className="h-4 w-4" />
-                    <span className="text-sm">USDC spending approved</span>
-                  </div>
-                  <Button
-                    onClick={handleDeposit}
-                    disabled={isDepositing}
-                    className="w-full"
-                  >
-                    {isDepositing ? 'Depositing...' : 'Confirm Deposit'}
-                  </Button>
-                </div>
-              )}
-            </div>
-          )}
-
-          {step === 4 && (
             <div className="space-y-4 text-center">
               <div className="flex justify-center">
                 <div className="bg-success/10 flex h-16 w-16 items-center justify-center rounded-full">
@@ -232,7 +273,10 @@ export default function DepositModal({
               <div>
                 <h3 className="text-lg font-semibold">Deposit Successful!</h3>
                 <p className="text-muted-foreground">
-                  You received {calculateShares(amount)} PYO shares
+                  You received {sharesToReceive} PYO shares
+                </p>
+                <p className="text-muted-foreground text-sm">
+                  Funds allocated to Aave strategy
                 </p>
               </div>
               <Badge variant="secondary" className="text-xs">
