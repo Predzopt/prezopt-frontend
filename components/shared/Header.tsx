@@ -61,7 +61,7 @@ export default function Header() {
           ))}
         </nav>
         <div className="flex items-center gap-4">
-          <WalletConnection />
+          {/* <WalletConnection /> */}
 
           <Button
             variant="ghost"

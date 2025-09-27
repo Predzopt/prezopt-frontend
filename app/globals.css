@@ -145,10 +145,14 @@
 
 @layer base {
   * {
-    @apply !border-border/15 outline-ring/50;
+    @apply border-border outline-ring/50;
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply bg-body-bg text-body;
+  }
+
+  section {
+    @apply bg-body-bg;
   }
 }

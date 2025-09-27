@@ -65,7 +65,7 @@ export default function Hero() {
 
           {!isConnected ? (
             <div className="flex flex-col items-center justify-center gap-4 sm:flex-row">
-              <WalletConnection />
+              {/* <WalletConnection /> */}
               <Button
                 variant="outline"
                 className="h-11 rounded-[10px] px-4 py-3.5 opacity-100 shadow-[inset_0_0.6px_0.6px_-1.58px_rgba(255,255,255,0.894),inset_0_2.28px_2.28px_-3.16px_rgba(255,255,255,0.745),inset_0_10px_10px_-4.75px_rgba(255,255,255,0.05)] backdrop-blur-[5px] duration-300 will-change-auto [background:linear-gradient(rgba(28,28,28,0.1)_0%,rgba(18,18,18,0.2)_100%)_rgba(0,0,0,0)]"
@@ -88,7 +88,7 @@ export default function Hero() {
         </div>
 
         <div className="z-10 flex w-full items-center justify-center pt-20">
-          <MotionImage
+          {/* <MotionImage
             animate={{ rotate: 360 }}
             transition={{
               repeat: Infinity,
@@ -101,7 +101,8 @@ export default function Hero() {
             height={500}
             alt="globe"
             className="a"
-          />
+            priority
+          /> */}
         </div>
       </div>
     </section>
