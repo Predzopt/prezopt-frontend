@@ -1,18 +1,12 @@
 // services/blockchainService.ts
 import { ethers } from 'ethers';
-
-// BlockDAG Network Configuration
-const BLOCKDAG_NETWORK = {
-  chainId: '0x413', // 1043 in hex
-  chainName: 'BlockDAG',
-  nativeCurrency: {
-    name: 'BlockDAG',
-    symbol: 'BDAG',
-    decimals: 18,
-  },
-  rpcUrls: ['https://rpc.primordial.bdagscan.com'],
-  blockExplorerUrls: ['https://primordial.bdagscan.com'],
-};
+import {
+  SUPPORTED_CHAINS,
+  DEFAULT_CHAIN,
+  getChainConfig,
+  getChainConfigByKey,
+  type ChainConfig,
+} from '../utils/CONSTANTS';
 
 // ABI remains unchanged
 const SIMULATOR_ABI = [
@@ -31,9 +25,7 @@ const SIMULATOR_ABI = [
   'event YieldAccrued(uint256 strategy, uint256 amount)',
 ];
 
-export const CONTRACTS = {
-  SIMULATOR: '0x709900553fE09E934243282F764A806A50Acfc21',
-} as const;
+// Contract addresses will be resolved dynamically based on current chain
 
 export const STRATEGIES = {
   AAVE: 0,
@@ -51,17 +43,28 @@ class BlockchainService {
   private provider: ethers.BrowserProvider | null = null;
   private signer: ethers.Signer | null = null;
   public simulator: ethers.Contract | null = null;
+  private currentChain: ChainConfig | null = null;
+  private currentChainKey: string = DEFAULT_CHAIN;
 
   // Initialize with provider and signer from wallet context
-  async init(provider?: ethers.BrowserProvider, signer?: ethers.Signer) {
+  async init(
+    provider?: ethers.BrowserProvider,
+    signer?: ethers.Signer,
+    chainKey?: string
+  ) {
     if (provider && signer) {
       this.provider = provider;
       this.signer = signer;
-      this.simulator = new ethers.Contract(
-        CONTRACTS.SIMULATOR,
-        SIMULATOR_ABI,
-        signer
-      );
+
+      // Set chain if provided, otherwise detect from provider
+      if (chainKey) {
+        this.currentChainKey = chainKey;
+        this.currentChain = getChainConfigByKey(chainKey);
+      } else {
+        await this.detectCurrentChain();
+      }
+
+      await this.initializeContract();
       return true;
     }
 
@@ -72,20 +75,13 @@ class BlockchainService {
     }
 
     try {
-      // Check if on BlockDAG network
-      const chainId = await ethereum.request({ method: 'eth_chainId' });
-      if (chainId !== BLOCKDAG_NETWORK.chainId) {
-        console.warn('Not on BlockDAG network. Current chainId:', chainId);
-        // Don't throw error, just warn - let user handle network switching
-      }
-
       this.provider = new ethers.BrowserProvider(ethereum);
       this.signer = await this.provider.getSigner();
-      this.simulator = new ethers.Contract(
-        CONTRACTS.SIMULATOR,
-        SIMULATOR_ABI,
-        this.signer
-      );
+
+      // Detect current chain
+      await this.detectCurrentChain();
+      await this.initializeContract();
+
       return true;
     } catch (error) {
       console.error('Failed to initialize blockchain service:', error);
@@ -93,40 +89,120 @@ class BlockchainService {
     }
   }
 
-  // Switch to BlockDAG network
-  async switchToBlockDAG() {
+  // Detect current chain from provider
+  private async detectCurrentChain() {
+    if (!this.provider) return;
+
+    try {
+      const network = await this.provider.getNetwork();
+      const chainId = '0x' + network.chainId.toString(16);
+      this.currentChain = getChainConfig(chainId);
+
+      if (this.currentChain) {
+        // Find the chain key
+        this.currentChainKey =
+          Object.keys(SUPPORTED_CHAINS).find(
+            key => SUPPORTED_CHAINS[key].chainId === chainId
+          ) || DEFAULT_CHAIN;
+      } else {
+        console.warn('Unsupported chain detected:', chainId);
+        this.currentChain = getChainConfigByKey(DEFAULT_CHAIN);
+        this.currentChainKey = DEFAULT_CHAIN;
+      }
+    } catch (error) {
+      console.error('Error detecting current chain:', error);
+      this.currentChain = getChainConfigByKey(DEFAULT_CHAIN);
+      this.currentChainKey = DEFAULT_CHAIN;
+    }
+  }
+
+  // Initialize contract with current chain's address
+  private async initializeContract() {
+    if (!this.signer || !this.currentChain) return;
+
+    // Get contract address from current chain config
+    const contractAddress = this.currentChain.simulatorAddress;
+
+    if (!contractAddress) {
+      throw new Error(
+        `Simulator contract not deployed on ${this.currentChain.chainName}`
+      );
+    }
+
+    this.simulator = new ethers.Contract(
+      contractAddress,
+      SIMULATOR_ABI,
+      this.signer
+    );
+  }
+
+  // Switch to a specific chain
+  async switchToChain(chainKey: string) {
     const ethereum = getEthereumProvider();
     if (!ethereum) {
       throw new Error('MetaMask is not installed');
     }
 
+    const chainConfig = getChainConfigByKey(chainKey);
+    if (!chainConfig) {
+      throw new Error(`Unsupported chain: ${chainKey}`);
+    }
+
     try {
-      // Try to switch to BlockDAG network
+      // Try to switch to the target network
       await ethereum.request({
         method: 'wallet_switchEthereumChain',
-        params: [{ chainId: BLOCKDAG_NETWORK.chainId }],
+        params: [{ chainId: chainConfig.chainId }],
       });
+
+      // Update current chain
+      this.currentChainKey = chainKey;
+      this.currentChain = chainConfig;
+
+      // Reinitialize contract with new chain's address
+      if (this.signer) {
+        await this.initializeContract();
+      }
     } catch (switchError: any) {
       // If the network doesn't exist, add it
       if (switchError.code === 4902) {
         try {
           await ethereum.request({
             method: 'wallet_addEthereumChain',
-            params: [BLOCKDAG_NETWORK],
+            params: [chainConfig],
           });
+
+          // Update current chain
+          this.currentChainKey = chainKey;
+          this.currentChain = chainConfig;
+
+          // Reinitialize contract with new chain's address
+          if (this.signer) {
+            await this.initializeContract();
+          }
         } catch (addError) {
-          throw new Error('Failed to add BlockDAG network to wallet');
+          throw new Error(
+            `Failed to add ${chainConfig.chainName} network to wallet`
+          );
         }
       } else {
-        throw new Error('Failed to switch to BlockDAG network');
+        throw new Error(`Failed to switch to ${chainConfig.chainName} network`);
       }
     }
   }
 
-  // Check if on BlockDAG network
-  async isOnBlockDAG(): Promise<boolean> {
+  // Switch to BlockDAG network (backward compatibility)
+  async switchToBlockDAG() {
+    return this.switchToChain('blockdag');
+  }
+
+  // Check if on a specific chain
+  async isOnChain(chainKey: string): Promise<boolean> {
     const ethereum = getEthereumProvider();
     if (!ethereum) return false;
+
+    const chainConfig = getChainConfigByKey(chainKey);
+    if (!chainConfig) return false;
 
     try {
       const chainId = await ethereum.request({ method: 'eth_chainId' });
@@ -134,18 +210,46 @@ class BlockchainService {
         'Current chainId:',
         chainId,
         'Expected:',
-        BLOCKDAG_NETWORK.chainId
+        chainConfig.chainId
       );
-      return chainId === BLOCKDAG_NETWORK.chainId;
+      return chainId === chainConfig.chainId;
     } catch (error) {
       console.error('Error checking chainId:', error);
       return false;
     }
   }
 
+  // Check if on BlockDAG network (backward compatibility)
+  async isOnBlockDAG(): Promise<boolean> {
+    return this.isOnChain('blockdag');
+  }
+
+  // Get current chain information
+  getCurrentChain(): ChainConfig | null {
+    return this.currentChain;
+  }
+
+  // Get current chain key
+  getCurrentChainKey(): string {
+    return this.currentChainKey;
+  }
+
+  // Get all supported chains
+  getSupportedChains(): Record<string, ChainConfig> {
+    return SUPPORTED_CHAINS;
+  }
+
   // Check if contract is deployed on current network
   async isContractDeployed(): Promise<boolean> {
-    if (!this.simulator) return false;
+    if (!this.simulator || !this.currentChain) return false;
+
+    // Check if contract address is configured for current chain
+    if (!this.currentChain.simulatorAddress) {
+      console.warn(
+        `No simulator contract address configured for ${this.currentChain.chainName}`
+      );
+      return false;
+    }
 
     try {
       // Try to call a view function to check if contract exists
@@ -255,7 +359,8 @@ class BlockchainService {
       address,
       amount,
       amountWei: amountWei.toString(),
-      contractAddress: CONTRACTS.SIMULATOR,
+      contractAddress: this.currentChain?.simulatorAddress,
+      chain: this.currentChain?.chainName,
     });
 
     try {

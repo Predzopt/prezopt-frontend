@@ -8,14 +8,25 @@ import {
   useEffect,
 } from 'react';
 import { ethers } from 'ethers';
+import {
+  SUPPORTED_CHAINS,
+  DEFAULT_CHAIN,
+  getChainConfig,
+  getChainConfigByKey,
+  type ChainConfig,
+} from '../utils/CONSTANTS';
 
 interface WalletContextType {
   isConnected: boolean;
   address: string | undefined;
   provider: ethers.BrowserProvider | null;
   signer: ethers.JsonRpcSigner | null;
+  currentChain: ChainConfig | null;
+  currentChainKey: string;
   connect: () => Promise<void>;
   disconnect: () => Promise<void>;
+  switchChain: (chainKey: string) => Promise<void>;
+  isOnSupportedChain: () => boolean;
 }
 
 const WalletContext = createContext<WalletContextType | undefined>(undefined);
@@ -25,6 +36,8 @@ export function WalletProvider({ children }: { children: ReactNode }) {
   const [address, setAddress] = useState<string | undefined>(undefined);
   const [provider, setProvider] = useState<ethers.BrowserProvider | null>(null);
   const [signer, setSigner] = useState<ethers.JsonRpcSigner | null>(null);
+  const [currentChain, setCurrentChain] = useState<ChainConfig | null>(null);
+  const [currentChainKey, setCurrentChainKey] = useState<string>(DEFAULT_CHAIN);
   const [userDisconnected, setUserDisconnected] = useState(false);
 
   // Check if MetaMask is installed
@@ -38,6 +51,88 @@ export function WalletProvider({ children }: { children: ReactNode }) {
   const getProvider = () => {
     if (!isMetaMaskInstalled()) return null;
     return new ethers.BrowserProvider(window.ethereum!);
+  };
+
+  // Detect current chain from provider
+  const detectCurrentChain = async (provider: ethers.BrowserProvider) => {
+    try {
+      const network = await provider.getNetwork();
+      const chainId = '0x' + network.chainId.toString(16);
+      const chainConfig = getChainConfig(chainId);
+
+      if (chainConfig) {
+        // Find the chain key
+        const chainKey =
+          Object.keys(SUPPORTED_CHAINS).find(
+            key => SUPPORTED_CHAINS[key].chainId === chainId
+          ) || DEFAULT_CHAIN;
+
+        setCurrentChain(chainConfig);
+        setCurrentChainKey(chainKey);
+        return chainKey;
+      } else {
+        console.warn('Unsupported chain detected:', chainId);
+        const defaultChain = getChainConfigByKey(DEFAULT_CHAIN);
+        setCurrentChain(defaultChain);
+        setCurrentChainKey(DEFAULT_CHAIN);
+        return DEFAULT_CHAIN;
+      }
+    } catch (error) {
+      console.error('Error detecting current chain:', error);
+      const defaultChain = getChainConfigByKey(DEFAULT_CHAIN);
+      setCurrentChain(defaultChain);
+      setCurrentChainKey(DEFAULT_CHAIN);
+      return DEFAULT_CHAIN;
+    }
+  };
+
+  // Switch to a specific chain
+  const switchChain = async (chainKey: string) => {
+    if (!isMetaMaskInstalled()) {
+      throw new Error('MetaMask is not installed');
+    }
+
+    const chainConfig = getChainConfigByKey(chainKey);
+    if (!chainConfig) {
+      throw new Error(`Unsupported chain: ${chainKey}`);
+    }
+
+    try {
+      // Try to switch to the target network
+      await window.ethereum!.request({
+        method: 'wallet_switchEthereumChain',
+        params: [{ chainId: chainConfig.chainId }],
+      });
+
+      // Update current chain
+      setCurrentChain(chainConfig);
+      setCurrentChainKey(chainKey);
+    } catch (switchError: any) {
+      // If the network doesn't exist, add it
+      if (switchError.code === 4902) {
+        try {
+          await window.ethereum!.request({
+            method: 'wallet_addEthereumChain',
+            params: [chainConfig],
+          });
+
+          // Update current chain
+          setCurrentChain(chainConfig);
+          setCurrentChainKey(chainKey);
+        } catch (addError) {
+          throw new Error(
+            `Failed to add ${chainConfig.chainName} network to wallet`
+          );
+        }
+      } else {
+        throw new Error(`Failed to switch to ${chainConfig.chainName} network`);
+      }
+    }
+  };
+
+  // Check if on a supported chain
+  const isOnSupportedChain = (): boolean => {
+    return currentChain !== null;
   };
 
   // Connect wallet
@@ -65,6 +160,9 @@ export function WalletProvider({ children }: { children: ReactNode }) {
 
       const newSigner = await newProvider.getSigner();
       const newAddress = await newSigner.getAddress();
+
+      // Detect current chain
+      await detectCurrentChain(newProvider);
 
       setProvider(newProvider);
       setSigner(newSigner);
@@ -148,6 +246,9 @@ export function WalletProvider({ children }: { children: ReactNode }) {
             const newSigner = await newProvider.getSigner();
             const newAddress = await newSigner.getAddress();
 
+            // Detect current chain
+            await detectCurrentChain(newProvider);
+
             setProvider(newProvider);
             setSigner(newSigner);
             setAddress(newAddress);
@@ -172,14 +273,24 @@ export function WalletProvider({ children }: { children: ReactNode }) {
       }
     };
 
+    // Listen for chain changes
+    const handleChainChanged = async (chainId: string) => {
+      console.log('Chain changed to:', chainId);
+      if (provider && isConnected) {
+        await detectCurrentChain(provider);
+      }
+    };
+
     if (window.ethereum) {
       window.ethereum.on('accountsChanged', handleAccountsChanged);
+      window.ethereum.on('chainChanged', handleChainChanged);
 
       return () => {
         window.ethereum!.removeListener(
           'accountsChanged',
           handleAccountsChanged
         );
+        window.ethereum!.removeListener('chainChanged', handleChainChanged);
       };
     }
   }, []);
@@ -191,8 +302,12 @@ export function WalletProvider({ children }: { children: ReactNode }) {
         address,
         provider,
         signer,
+        currentChain,
+        currentChainKey,
         connect,
         disconnect,
+        switchChain,
+        isOnSupportedChain,
       }}
     >
       {children}
