@@ -1,15 +1,18 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import WalletConnection from '../WalletConnection';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
 import { Button } from '../ui/button';
 import Image from 'next/image';
+import { ActionButtonList } from '../ActionButtonList';
+import { useAppKitAccount } from '@reown/appkit/react';
 
 export default function Header() {
   const [canShrink, setCanShrink] = useState(false);
   const [open, setOpen] = useState(false);
+  const { address, isConnected, caipAddress, status, embeddedWalletInfo } =
+    useAppKitAccount();
 
   useEffect(() => {
     function handleScroll() {
@@ -61,8 +64,7 @@ export default function Header() {
           ))}
         </nav>
         <div className="flex items-center gap-4">
-          <WalletConnection />
-
+          <ActionButtonList />
           <Button
             variant="ghost"
             className="inline-grid cursor-pointer gap-2 px-0 md:hidden"

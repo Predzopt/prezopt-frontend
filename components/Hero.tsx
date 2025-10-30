@@ -1,7 +1,6 @@
 'use client';
 
 import React from 'react';
-import WalletConnection from './WalletConnection';
 import { Button } from './ui/button';
 import { ArrowRight } from 'lucide-react';
 import Image from 'next/image';
@@ -16,7 +15,6 @@ const MotionH1 = motion.h1;
 const MotionP = motion.p;
 
 export default function Hero() {
-  const { isConnected } = useWallet();
   const { scrollYProgress } = useScroll();
   const y = useTransform(scrollYProgress, [0, 1], ['0%', '50%']);
   const opacity = useTransform(scrollYProgress, [0, 0.5], [1, 0]);
@@ -139,7 +137,7 @@ export default function Hero() {
             for better yield.
           </MotionP>
 
-          {!isConnected ? (
+          {!true ? (
             <MotionDiv
               className="flex flex-col items-center justify-center gap-4 sm:flex-row"
               initial={{ opacity: 0, y: 20 }}
@@ -153,7 +151,7 @@ export default function Hero() {
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
               >
-                <WalletConnection />
+                <appkit-button />
               </motion.div>
               <motion.div
                 initial={{ opacity: 0, scale: 0.8 }}
