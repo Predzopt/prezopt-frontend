@@ -21,7 +21,7 @@ export interface ChainConfig {
 }
 
 export const SUPPORTED_CHAINS: Record<string, ChainConfig> = {
-  // BlockDAG Network (existing)
+  // BlockDAG Network
   blockdag: {
     chainId: '0x413', // 1043 in hex
     chainName: 'BlockDAG',
@@ -47,7 +47,7 @@ export const SUPPORTED_CHAINS: Record<string, ChainConfig> = {
     },
     rpcUrls: ['https://sepolia.base.org'],
     blockExplorerUrls: ['https://sepolia.basescan.org'],
-    simulatorAddress: '0xA16ea5653d1d68221e626d994372b1AD33E8135A', // Will be updated when deployed
+    simulatorAddress: '0xA16ea5653d1d68221e626d994372b1AD33E8135A', 
     isTestnet: true,
   },
 
@@ -62,7 +62,7 @@ export const SUPPORTED_CHAINS: Record<string, ChainConfig> = {
     },
     rpcUrls: ['https://sepolia.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161'],
     blockExplorerUrls: ['https://sepolia.etherscan.io'],
-    simulatorAddress: '0xA16ea5653d1d68221e626d994372b1AD33E8135A', // Will be updated when deployed
+    simulatorAddress: '0xA16ea5653d1d68221e626d994372b1AD33E8135A', 
     isTestnet: true,
   },
 };
